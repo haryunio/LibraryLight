@@ -55,7 +55,8 @@ An administrator can manage only one library.
     - Behavior
       1. Validates the inputs.
       2. Checks if the ID is unique.
-      3. `db.Accounts.insertOne({ID: ID, passwordHash: passwordHash: passwordHash, type: type: "user", information: {usingLibraries: []}})`
+      3. Generates a hash for the password.
+      4. `db.Accounts.insertOne({ID: (the ID), passwordHash: (the hash for the password), type: type: "user", information: {usingLibraries: []}})`
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
