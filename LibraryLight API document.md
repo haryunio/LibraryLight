@@ -82,7 +82,7 @@ An administrator can manage only one library.
   - **To generate a new library API token and update it** :x:
     - Request
       - GET
-      - `/API/administrator/newTheLibraryToken` or `/API/admin/newTheLibraryToken`
+      - `/API/administrator/newLibraryAPIToken` or `/API/admin/newLibraryAPIToken`
     - Parameters
       - _(none)_
     - Behavior
