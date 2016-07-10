@@ -10,8 +10,13 @@
     - Parameters
       - ID
       - password
+    - Behavior
+      1. Validates the inputs.
+      2. Checks if the input is correct.
+      3. `request.session.loggedInAs = ID`
     - Returns
-      - {token}
+      - `{"success": true}` on success.
+      - `{"success": false, reason: (the reason string)}` on failure.
 
 ## For users
 
@@ -22,9 +27,13 @@
     - Parameters
       - ID
       - password
+    - Behavior
+      1. Validates the inputs.
+      2. Checks if the ID is unique.
+      3. `db.Accounts.insertOne({ID: ID, passwordHash: passwordHash: passwordHash, type: type: "user", information: {usingLibraries: []}})`
     - Returns
-      - `true` on success.
-      - `false` on failure.
+      - `{"success": true}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
 
 
 
