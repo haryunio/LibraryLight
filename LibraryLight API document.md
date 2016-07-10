@@ -102,29 +102,25 @@ An administrator can manage only one library.
 DB:
   - LibraryLight
     - Accounts
-		  - ID
-			- passwordHash
-			- type: "administrator" | "developer" | "user"
-			- information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}]}
-
-	  - Libraries
-	    - libraryID
-	  	- libraryAPIToken
-		  - userCodes: [{
-		    - userCode
-				- userID: undefined | "something"
-				- permission: ["borrowable", "lightable"]  }]
-
-		- Books
-			- ISBN
-			- libraryID
-			- bookcaseNumber: <Raspberry Pi>
-			- bookCode: <RFID>
-
-		- Lights
-		  - :star:
-
-		- BookInformation
-			- ISBN
-			- title: {main, sub1, sub2}
-			- description
+      - ID
+      - passwordHash
+      - type: "administrator" | "developer" | "user"
+      - information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}]}
+    - Libraries
+      - libraryID
+      - libraryAPIToken
+      - userCodes: [{
+        - userCode
+        - userID: undefined | "something"
+        - permission: ["borrowable", "lightable"]  }];
+    - Books
+      - ISBN
+      - libraryID
+      - bookcaseNumber: <Raspberry Pi>
+      - bookCode: <RFID>
+    - Lights
+      - :star:
+    - BookInformation
+      - ISBN
+      - title: {main, sub1, sub2}
+      - description
