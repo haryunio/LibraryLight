@@ -36,7 +36,7 @@ An administrator can manage only one library.
       - bookcaseNumber: the bookcase's number. This should be unique in the library.
     - Behavior
       1. Validates the inputs: `bookcaseNumber` cannot be a null.
-      2. Gets the library ID: db.Libraries.findOne({libraryAPIToken: (the library API token)}).libraryID.
+      2. Gets the library ID: `db.Libraries.findOne({libraryAPIToken: (the library API token)}).libraryID`.
       3. `db.Books.updateOne({libraryID: (the library ID)}, {$set: {bookcaseNumber: (the bookcase number)}})`
     - Returns
       - `{success: true}` on success.
