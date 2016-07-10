@@ -81,10 +81,10 @@ An administrator can manage only one library.
 
   - **To generate a new library API token and update it** :x:
     - Request
-      - GET
+      - POST
       - `/API/administrator/newLibraryAPIToken` or `/API/admin/newLibraryAPIToken`
     - Parameters
-      - _(none)_
+      - noGET: must be `"Orca <3"`.
     - Behavior
       1. Generates a new random long string, which will be the new library API token.
       2. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
