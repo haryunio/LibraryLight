@@ -1,5 +1,6 @@
 # LibraryLight APIs
 :x: means **it is not developed yet**.
+The APIs must only work with their corresponding permission(authentication).
 
 ## General
 
@@ -34,8 +35,6 @@
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
-
-
 
 ## For administrators
 
