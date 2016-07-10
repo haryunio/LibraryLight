@@ -1,10 +1,15 @@
 # LibraryLight APIs
+
 :x: means **it is not developed yet**.
+
 The APIs must only work with their corresponding permission(authentication).
+
+An administrator can manage only one library.
+
 
 ## General
 
-  - **Login**
+  - **To login**
     - Request
       - POST
       - `/API/login`
@@ -21,7 +26,7 @@ The APIs must only work with their corresponding permission(authentication).
 
 ## For users
 
-  - **Register**
+  - **To register**
     - Request
       - POST
       - `/API/user/register`
@@ -37,5 +42,20 @@ The APIs must only work with their corresponding permission(authentication).
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 ## For administrators
+
+  - **To generate a new library API token and update it**
+    - Request
+      - GET
+      - `/API/administrator/newTheLibraryToken` or `/API/admin/newTheLibraryToken`
+    - Parameters
+      - _(none)_
+    - Behavior
+      1. Generates a new random long string, which will be the new library API token.
+      2. Get the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
+      3. `db.Libraries.update({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new API token)}})`
+    - Returns:
+      - `{"success": true}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
+
 
 ## For developers
