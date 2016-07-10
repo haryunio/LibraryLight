@@ -9,7 +9,7 @@ An administrator can manage only one library.
 
 ## General
 
-  - **To login**
+  - **To login** :x:
     - Request
       - POST
       - `/API/login`
@@ -24,9 +24,18 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, reason: (the reason string)}` on failure.
 
+
+## For Raspberry Pi(bookcase)s
+  - **To update information of books within bookcases** :x:
+    - Request
+    - Parameters
+    - Behavior
+    - Returns
+
+
 ## For users
 
-  - **To register**
+  - **To register** :x:
     - Request
       - POST
       - `/API/user/register`
@@ -41,9 +50,10 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
+
 ## For administrators
 
-  - **To generate a new library API token and update it**
+  - **To generate a new library API token and update it** :x:
     - Request
       - GET
       - `/API/administrator/newTheLibraryToken` or `/API/admin/newTheLibraryToken`
