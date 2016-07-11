@@ -124,6 +124,20 @@ An administrator can manage only one library.
       - `{"success": true, "newUserCode": (the new user code)}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
+  - **To delete a specific user code for an administrator's library** :x:
+    - Request
+      - POST
+      - `/API/administrator/deleteUserCode` or `/API/admin/deleteUserCode`
+    - Parameters
+      - userCode: a user code, to delete, for the administrator's library.
+    - Behavior
+      1. Validates the inputs.
+      2. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      3. `db.Libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"deletedCount" : 1}`, returns `{"success": false, "reason": "The user code does not exist, or a database error occurred."}`.
+    - Returns
+      - `{"success": true}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
+
   - **To generate a new library API token and update it** :x:
     - Request
       - POST
