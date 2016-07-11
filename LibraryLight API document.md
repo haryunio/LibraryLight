@@ -29,12 +29,12 @@ An administrator can manage only one library.
       - POST
       - `/API/logout`
     - Parameters
-      - `noGET`: must be `"I love Orca."`.
+      - `noGET`: must be truthy.
     - Behavior
-      1. Checks if `noGET` is `"I love Orca."`.
+      1. Checks if `noGET` is truthy.
       2. `request.session.loggedInAs = null`.
     - Returns
-      - `{"success": true}` on success
+      - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
@@ -74,6 +74,21 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
+  - **To get the list of libraries that is being used by the user** :x:
+    - Request
+      - POST
+      - `/API/user/getUsingLibraries`
+    - Parameters
+      - `noGET`: must be truthy.
+    - Behavior
+      1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
+      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      3. Checks if `theAccount.type === "user"`. If it isn't, returns `{"success": false, "reason": "You are not a user!"}`.
+      4. Returns `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`.
+    - Returns
+      - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
+
 
 ## For administrators
 
@@ -97,11 +112,12 @@ An administrator can manage only one library.
       - POST
       - `/API/administrator/newLibraryAPIToken` or `/API/admin/newLibraryAPIToken`
     - Parameters
-      - noGET: must be `"Orca <3"`.
+      - `noGET`: must be truthy.
     - Behavior
-      1. Generates a new random long string, which will be the new library API token.
-      2. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
-      3. `db.Libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new API token)}})`
+      1. Checks if `noGET` is truthy.
+      2. Generates a new random long string, which will be the new library API token.
+      3. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
+      4. `db.Libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new API token)}})`
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
