@@ -138,10 +138,10 @@ DB:
     - Libraries
       - libraryID
       - libraryAPIToken
-      - userCodes: [{
+      - userCodes: [ {
         - userCode
         - userID: undefined | "something"
-        - permission: ["borrowable", "lightable"]  }]
+        - permission: ["borrowable", "lightable"] }, ...]
     - Books
       - ISBN
       - libraryID
