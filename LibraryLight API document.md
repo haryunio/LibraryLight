@@ -107,7 +107,23 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
-  - **To generate a user code and make it under control** :x:
+  - **To get information about the administrator's library** :x:
+    - Request
+      - POST
+      - `/API/administrator/libraryInformation` or `/API/admin/libraryInformation`
+    - Parameters
+      - `noGET`: must be truthy.
+    - Behavior
+      1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
+      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      4. `theLibraryInformation = db.Libraries.findOne({libraryID: theAccount.information.libraryID})`
+      5. Returns `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`.
+    - Returns
+      - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token), "userCodes": (information about the user-codes)}` on success.
+      - `{"success": false}` on failure.
+
+  - **To generate a user-code and make it under control** :x:
     - Request
       - POST
       - `/API/administrator/newUserCode` or `/API/admin/newUserCode`
@@ -125,7 +141,7 @@ An administrator can manage only one library.
       - `{"success": true, "newUserCode": (the new user code)}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
-  - **To set permissions of a specific user code.** :x:
+  - **To set permissions of a specific user-code.** :x:
     - Request
       - POST
       - `/API/administrator/setPermissions` or `/API/admin/setPermissions`
@@ -138,12 +154,12 @@ An administrator can manage only one library.
       3. `db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
     - Returns
 
-  - **To delete a specific user code for an administrator's library** :x:
+  - **To delete a specific user-code for an administrator's library** :x:
     - Request
       - POST
       - `/API/administrator/deleteUserCode` or `/API/admin/deleteUserCode`
     - Parameters
-      - userCode: a user code, to delete, for the administrator's library.
+      - userCode: a user-code, to delete, for the administrator's library.
     - Behavior
       1. Validates the inputs.
       2. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
