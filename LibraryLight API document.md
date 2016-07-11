@@ -7,7 +7,7 @@ The APIs must only work with their corresponding permission(authentication).
 An administrator can manage only one library.
 
 
-## General
+## General - 2 APIs
 
   - **To login** :x:
     - Request
@@ -38,7 +38,7 @@ An administrator can manage only one library.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
-## For Raspberry Pi(bookcase)s
+## For Raspberry Pi(bookcase)s - 1 API
   - **To update information of books within bookcases** :x:
     - Request
       - POST
@@ -56,7 +56,7 @@ An administrator can manage only one library.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
-## For users
+## For users - 2 APIs
 
   - **To register** :x:
     - Request
@@ -90,7 +90,7 @@ An administrator can manage only one library.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
-## For administrators
+## For administrators - 6 APIs
 
   - **To add a book in their libraries** :x:
     - Request
@@ -184,7 +184,7 @@ An administrator can manage only one library.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
-## For developers
+## For developers - 0 API
 
 
 
