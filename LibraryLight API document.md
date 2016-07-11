@@ -134,7 +134,7 @@ DB:
       - ID
       - passwordHash
       - type: "administrator" | "developer" | "user"
-      - information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}]}
+      - information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}, ...]}
     - Libraries
       - libraryID
       - libraryAPIToken
