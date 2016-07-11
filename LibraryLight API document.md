@@ -118,11 +118,25 @@ An administrator can manage only one library.
       2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. `db.Libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
-      6. Returns `JSON.stringify({"success": true, "newUserCode": (the user code)})`
+      5. Checks if it's duplicated: `db.Libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (the user code)}, {"_id": 1})`. If it already exists, goes to step 4.
+      6. `db.Libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
+      7. Returns `JSON.stringify({"success": true, "newUserCode": (the user code)})`
     - Returns
       - `{"success": true, "newUserCode": (the new user code)}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
+
+  - **To set permissions of a specific user code.** :x:
+    - Request
+      - POST
+      - `/API/administrator/setPermissions` or `/API/admin/setPermissions`
+    - Parameters
+      - `userCode`
+      - `permissions`
+    - Behavior
+      1. Validates the inputs.
+      2. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      3. `db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+    - Returns
 
   - **To delete a specific user code for an administrator's library** :x:
     - Request
@@ -133,7 +147,7 @@ An administrator can manage only one library.
     - Behavior
       1. Validates the inputs.
       2. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      3. `db.Libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"deletedCount" : 1}`, returns `{"success": false, "reason": "The user code does not exist, or a database error occurred."}`.
+      3. `db.Libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
