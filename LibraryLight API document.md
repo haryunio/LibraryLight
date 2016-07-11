@@ -107,6 +107,23 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
+  - **To generate a user code and make it under control** :x:
+    - Request
+      - POST
+      - `/API/administrator/newUserCode` or `/API/admin/newUserCode`
+    - Parameters
+      - `noGET`: must be truthy.
+    - Behavior
+      1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
+      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
+      5. `db.Libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
+      6. Returns `JSON.stringify({"success": true, "newUserCode": (the user code)})`
+    - Returns
+      - `{"success": true, "newUserCode": (the new user code)}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
+
   - **To generate a new library API token and update it** :x:
     - Request
       - POST
