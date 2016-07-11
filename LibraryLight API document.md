@@ -97,7 +97,7 @@ An administrator can manage only one library.
       - POST
       - `/API/administrator/addBook` or `/API/admin/addBook`
     - Parameters
-      - ISBN: :star:...?.
+      - ISBN: a string that contains the book's International Standard Book Number(EAN-13).
       - bookCode: should be stored in the book's RFID tag.
     - Behavior
       1. Validates the inputs.
