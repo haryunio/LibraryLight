@@ -22,7 +22,20 @@ An administrator can manage only one library.
       3. `request.session.loggedInAs = ID`
     - Returns
       - `{"success": true}` on success.
-      - `{"success": false, reason: (the reason string)}` on failure.
+      - `{"success": false, "reason": (the reason string)}` on failure.
+
+  - **To logout** :x:
+    - Request
+      - POST
+      - `/API/logout`
+    - Parameters
+      - `noGET`: must be `"I love Orca."`.
+    - Behavior
+      1. Checks if `noGET` is `"I love Orca."`.
+      2. `request.session.loggedInAs = null`.
+    - Returns
+      - `{"success": true}` on success
+      - `{"success": false, "reason": (the reason string)}` on failure.
 
 
 ## For Raspberry Pi(bookcase)s
@@ -39,8 +52,8 @@ An administrator can manage only one library.
       2. Gets the library ID: `db.Libraries.findOne({libraryAPIToken: (the library API token)}).libraryID`.
       3. `db.Books.updateOne({libraryID: (the library ID)}, {$set: {bookcaseNumber: (the bookcase number)}})`
     - Returns
-      - `{success: true}` on success.
-      - `{success: false, reason: (the reason string)}` on failure.
+      - `{"success": true}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
 
 
 ## For users
@@ -76,8 +89,8 @@ An administrator can manage only one library.
       2. Gets the ID of the administrator's library: `db.Accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
       3. `db.Books.insertOne({ISBN: (the ISBN), libraryID: (the library ID), bookcaseNumber: null, bookCode: (the book code)})`
     - Returns
-      - `{success: true}` on success.
-      - `{success: false, reason: (the reason string)}` on failure.
+      - `{"success": true}` on success.
+      - `{"success": false, "reason": (the reason string)}` on failure.
 
   - **To generate a new library API token and update it** :x:
     - Request
@@ -112,7 +125,7 @@ DB:
       - userCodes: [{
         - userCode
         - userID: undefined | "something"
-        - permission: ["borrowable", "lightable"]  }];
+        - permission: ["borrowable", "lightable"]  }]
     - Books
       - ISBN
       - libraryID
