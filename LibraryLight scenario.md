@@ -6,7 +6,7 @@
 4. :small_blue_diamond: **그 관리자**가 새로운 user-code를 생성한다.
 5. :small_blue_diamond: **그 관리자**가 그 user-code에 책을 빌릴 수 있는 권한(`"borrowable"`)과 책장을 점등할 수 있는 권한(`"lightable"`)을 부여한다.
 6. :small_blue_diamond: **그 관리자**가 그 도서관의 ID를 확인한다.
-7. 그 도서관의 ID와 그 user-code를 그 사용자에게 알린다.
+7. 그 관리자가 그 도서관의 ID와 그 user-code를 그 사용자에게 알린다.
 8. :small_orange_diamond: **그 사용자**가 자신의 책첵 계정에 로그인한다.
 9. :small_orange_diamond: **그 사용자**가 자신의 계정에 그 도서관의 ID와 그 user-code를 입력하여 그 user-code에 자신의 계정을 연결한다.
 10. 이제 그 사용자는 그 도서관을 이용할 수 있다.
