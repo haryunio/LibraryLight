@@ -44,19 +44,20 @@ An administrator can manage only one library.
       - POST
       - `/API/takeMyBooks`
     - Parameters
-      - libraryAPIToken
-      - bookCode: is read from the book's RFID tag.
-      - bookcaseNumber: the bookcase's number. This should be unique in the library.
+      - `libraryAPIToken`
+      - `bookcaseNumber`: the bookcase's number. This should be unique in the library.
+      - `bookCodes`: are read from the books' RFID tag.
     - Behavior
       1. Validates the inputs: `bookcaseNumber` cannot be a null.
-      2. Gets the library ID: `db.Libraries.findOne({libraryAPIToken: (the library API token)}).libraryID`.
-      3. `db.Books.updateOne({libraryID: (the library ID)}, {$set: {bookcaseNumber: (the bookcase number)}})`
+      2. Gets the library ID: `db.Libraries.findOne({libraryAPIToken: (the library API token)}, {libraryID: 1}).libraryID`.
+      3. Takes off its ownership from the books owned: `db.Books.update({libraryID: (the library ID), bookcaseNumber: (the bookcase number)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
+      4. Owns the specified books: `db.Books.update({libraryID: (the library ID), bookCode: {$in: (the array of the book codes)}}, {$set: {bookcaseNumber: (the bookcase number)}}, {multi: true})`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
 
-## For users - 2 APIs
+## For users - 3 APIs
 
   - **To register** :x:
     - Request
@@ -74,7 +75,7 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
-  - **To own user-code**
+  - **To own user-code** :x:
     - Request
       - POST
       - `/API/user/ownUserCode`
@@ -124,7 +125,8 @@ An administrator can manage only one library.
     - Behavior
       1. Validates the inputs.
       2. Gets the ID of the administrator's library: `db.Accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
-      3. `db.Books.insertOne({ISBN: (the ISBN), libraryID: (the library ID), bookcaseNumber: null, bookCode: (the book code)})`
+      3. Checks if the book was already added: `db.Books.findOne({libraryID: (the library ID), bookCode: (the book code)}, {"_id": 1})`.
+      4. `db.Books.insertOne({ISBN: (the ISBN), libraryID: (the library ID), bookcaseNumber: null, bookCode: (the book code)})`
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
