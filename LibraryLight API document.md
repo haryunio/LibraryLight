@@ -74,6 +74,26 @@ An administrator can manage only one library.
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
 
+  - **To own user-code**
+    - Request
+      - POST
+      - `/API/user/ownUserCode`
+    - Parameters
+      - `libraryID`: the ID of the library where the user-code is valid.
+      - `userCode`: a user-code to own.
+    - Behavior
+      1. Validates the inputs.
+      2. `queryResult = db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user-code), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
+      3. If a database error has happened, returns `{"success": false, "reason": "Something is wrong with the database."}`.
+      4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
+      5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
+      6. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
+    - Returns
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true}`
+      - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
+      - `{"success": false, "reason": "Something unexpected has happened!"}`
+
   - **To get the list of libraries that is being used by the user** :x:
     - Request
       - POST
@@ -86,8 +106,10 @@ An administrator can manage only one library.
       3. Checks if `theAccount.type === "user"`. If it isn't, returns `{"success": false, "reason": "You are not a user!"}`.
       4. Returns `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`.
     - Returns
-      - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}` on success.
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "You are not a user!"}`
+      - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}`
 
 
 ## For administrators - 6 APIs
@@ -201,7 +223,7 @@ DB:
       - libraryAPIToken
       - userCodes: [ {
         - userCode
-        - userID: undefined | "something"
+        - userID: null | "something"
         - permission: ["borrowable", "lightable"] }, ...]
     - Books
       - ISBN
