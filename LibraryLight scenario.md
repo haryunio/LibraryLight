@@ -3,9 +3,9 @@
 1. 사용자가 책첵 서비스가 적용된 도서관을 이용하려고 한다.
 2. :small_orange_diamond: 그러기 위하여 **그 사용자**는 책첵 계정을 생성(회원 가입)한다.
 3. 그 사용자가 그 도서관에 가서 인증 절차를 밟았다. 그 도서관의 관리자가 그 도서관을 쓸 수 있는 권한을 그 사용자에게 부여하고자 한다.
-4. :small_blue_diamond: **그 관리자**가 새로운 user-code를 생성한다.
-5. :small_blue_diamond: **그 관리자**가 그 user-code에 책을 빌릴 수 있는 권한(`"borrowable"`)과 책장을 점등할 수 있는 권한(`"lightable"`)을 부여한다.
-6. :small_blue_diamond: **그 관리자**가 그 도서관의 ID를 확인한다.
+4. :small_blue_diamond: **그 관리자**가 user-code 목록이 나타난 관리 페이지를 확인한다. 이 페이지에는 그 도서관의 ID도 같이 보인다.
+5. :small_blue_diamond: **그 관리자**가 새로운 user-code를 생성한다. 
+6. :small_blue_diamond: **그 관리자**가 그 user-code에 책을 빌릴 수 있는 권한(`"borrowable"`)과 책장을 점등할 수 있는 권한(`"lightable"`)을 부여한다.
 7. 그 관리자가 그 도서관의 ID와 그 user-code를 그 사용자에게 알린다.
 8. :small_orange_diamond: **그 사용자**가 자신의 책첵 계정에 로그인한다.
 9. :small_orange_diamond: **그 사용자**가 자신의 계정에 그 도서관의 ID와 그 user-code를 입력하여 그 user-code에 자신의 계정을 연결한다.
@@ -21,6 +21,7 @@
 19. :small_blue_diamond: **그 관리자**는 그 책을 제거한다. 이때에 그 사용자의 ‘빌린 책’ 항목에서 그 책에 대한 정보가 제거된다.
 20. :small_orange_diamond: **그 사용자**가 자신이 빌린 책을 반납한다.
 21. :small_orange_diamond: **그 사용자**가 로그아웃한다.
+
 
 ## Comments
 
