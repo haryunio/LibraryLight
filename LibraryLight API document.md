@@ -6,7 +6,7 @@ The APIs must only work with their corresponding permission(authentication).
 
 An administrator can manage only one library.
 
-**Problem: How to prevent the concurrency collision?**
+**Problem: How to prevent the concurrency confliction?**
 1. Use a task queue per library.
 2. Check out [this document](https://docs.mongodb.com/manual/reference/glossary/#term-concurrency-control) and try to find the solution.
 
