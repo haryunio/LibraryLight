@@ -178,8 +178,9 @@ An administrator can manage only one library.
       - `permissions`
     - Behavior
       1. Validates the inputs.
-      2. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      3. `db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      3. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      4. `db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
     - Returns
 
   - **To delete a specific user-code for an administrator's library** :x:
