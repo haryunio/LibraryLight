@@ -209,8 +209,9 @@ An administrator can manage only one library.
       1. Checks if `noGET` is truthy.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Generates a new random long string, which will be the new library API token.
-      4. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
-      5. `db.Libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new API token)}})`.
+      4. Checks if the new one is different than the existing(current) one. If it is, goes to step 3.
+      5. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
+      6. `db.Libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new library API token)}})`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
