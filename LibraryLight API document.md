@@ -1,6 +1,6 @@
 # LibraryLight APIs
 
-:x: means **it is not developed yet**.
+:x: means **it is not developed yet**, and :star: means **the documentation is not finished at that part**.
 
 The APIs must only work with their corresponding permission(authentication).
 
