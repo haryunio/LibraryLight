@@ -3,11 +3,12 @@
 ## Symbols
  - :x:: **it is not developed yet**.
  - :star:: **the documentation is not finished at that part**.
- - :boom:: **the API is not atomic that it can cause query conflictions**.
+ - :boom:: **the API is not atomic that it can cause critical query confliction(race condition)s**.
 
 ## Terms
  - An administrator can manage only one library.
  - Library IDs given to administrators cannot be changed.
+ - The type of accounts cannot be changed.
  - The APIs must only work with their corresponding permission(authentication).
  - All the APIs have to be atomic(so there have to not be any :boom:.).
 
@@ -70,7 +71,7 @@
 
 ## For users - 3 APIs
 
-  - **To register** :x:
+  - **To register** :x: :boom:
     - Request
       - POST
       - `/API/user/register`
@@ -126,7 +127,7 @@
 
 ## For administrators - 6 APIs
 
-  - **To add a book in their libraries** :x:
+  - **To add a book in their libraries** :x: :boom:
     - Request
       - POST
       - `/API/administrator/addBook` or `/API/admin/addBook`
@@ -158,7 +159,7 @@
       - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token), "userCodes": (information about the user-codes)}` on success.
       - `{"success": false}` on failure.
 
-  - **To generate a user-code and make it under control** :x:
+  - **To generate a user-code and make it under control** :x: :boom:
     - Request
       - POST
       - `/API/administrator/newUserCode` or `/API/admin/newUserCode`
