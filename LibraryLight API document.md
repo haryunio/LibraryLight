@@ -1,15 +1,21 @@
 # LibraryLight APIs
 
-:x: means **it is not developed yet**, and :star: means **the documentation is not finished at that part**.
+## Symbols
+ - :x:: **it is not developed yet**.
+ - :star:: **the documentation is not finished at that part**.
+ - :boom:: **the API is not atomic that it can cause query conflictions**.
 
-The APIs must only work with their corresponding permission(authentication).
+## Terms
+ - An administrator can manage only one library.
+ - Library IDs given to administrators cannot be changed.
+ - The APIs must only work with their corresponding permission(authentication).
+ - All the APIs have to be atomic(so there have to not be any :boom:.).
 
-An administrator can manage only one library.
-
-**Problem: How to prevent the concurrency confliction?**
-1. Use a task(a group of queries) queue per library.
-2. Check out [this document](https://docs.mongodb.com/manual/reference/glossary/#term-concurrency-control) and try to find the solution.
-3. I think I found [a great document](http://stackoverflow.com/questions/10778493/whats-the-difference-between-findandmodify-and-update-in-mongodb)! But wait a while, I have a headache now..
+## Problems
+### **How to prevent the query confliction?**
+ - Use a task(a group of queries) queue per library. It's very hard to do it.
+ - Check out [this document](https://docs.mongodb.com/manual/reference/glossary/#term-concurrency-control) and try to find the solution.
+ - I think I found [a great document](http://stackoverflow.com/questions/10778493/whats-the-difference-between-findandmodify-and-update-in-mongodb)! But wait a while, I have a headache now..
 
 
 ## General - 2 APIs
