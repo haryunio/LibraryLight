@@ -9,6 +9,7 @@ An administrator can manage only one library.
 **Problem: How to prevent the concurrency confliction?**
 1. Use a task(a group of queries) queue per library.
 2. Check out [this document](https://docs.mongodb.com/manual/reference/glossary/#term-concurrency-control) and try to find the solution.
+3. I think I found [a great document](http://stackoverflow.com/questions/10778493/whats-the-difference-between-findandmodify-and-update-in-mongodb)! But wait a while, I have a headache now..
 
 
 ## General - 2 APIs
