@@ -228,6 +228,29 @@
 
 
 
+# 최적화에 대하여
+
+## 특정한 문서가 있는지 확인할 때
+ [이 글](https://blog.serverdensity.com/checking-if-a-document-exists-mongodb-slow-findone-vs-find/)에 따르면, 특정한 문서가 있는지 확인할 때에, `findOne`은 `find`와 `limit`의 조합보다 매우 느리다고 한다. 그러나 나는 `node-mongodb-native` 모듈을 쓰고 이 모듈의 `findOne`은 내부적으로 `find`와 `limit`의 조합으로 구현되어 있기 때문에, 특정한 문서가 있는지 확인하기 위해 `findOne`을 쓰겠다.
+ ```javascript
+ // https://github.com/mongodb/node-mongodb-native/blob/c41966c1b1834c33390922650e582842dbad2934/lib/collection.js#L833
+ 
+ Collection.prototype.findOne = function() {    
+  var self = this;
+  var args = Array.prototype.slice.call(arguments, 0);
+  var callback = args.pop();
+  var cursor = this.find.apply(this, args).limit(-1).batchSize(1);
+
+  // Return the item
+  cursor.next(function(err, item) {
+    if(err != null) return handleCallback(callback, toError(err), null);
+    handleCallback(callback, null, item);
+  });
+}
+ ```
+
+
+
 # LibraryLight 데이터베이스 구조
 DB:
   - LibraryLight
