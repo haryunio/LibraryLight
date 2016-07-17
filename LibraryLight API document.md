@@ -228,6 +228,9 @@
 ## For developers - 0 API
 
 
+# About optimization
+## When to check if a document exists
+ According to [this article](https://blog.serverdensity.com/checking-if-a-document-exists-mongodb-slow-findone-vs-find/), `findOne` is much slower than `find` with `limit` in order to do this. But I am using `node-mongodb-native`, whose `findOne` consists of `find` with `limit` internally. So I'm to use just `findOne` to do this.
 
 # LibraryLight DB structure
 DB:
