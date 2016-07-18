@@ -59,9 +59,9 @@
       - `bookCodes`: 이것은 그 책들의 RFID 태그에서 읽힌 책 코드들로 이루어진 배열이다.
     - 동작
       1. 입력이 유효한지 검사한다. 이때에 `bookcaseNumber`는 `null`이면 안 된다.
-      2. 도서관 ID를 얻는다: `db.Libraries.findOne({libraryAPIToken: (그 도서관 API 토큰)}, {libraryID: 1}).libraryID`.
-      3. 기존에 꽂혀(소유하고) 있던 책에 대한 소유권을 제거한다: `db.Books.update({libraryID: (그 도서관 ID), bookcaseNumber: (그 책장 번호)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
-      4. 인수에 명시된 책을 소유한다: `db.Books.update({libraryID: (그 도서관 ID), bookCode: {$in: (그 책 코드들로 이루어진 배열)}}, {$set: {bookcaseNumber: (그 책장 번호)}}, {multi: true})`.
+      2. 도서관 ID를 얻는다: `db.libraries.findOne({libraryAPIToken: (그 도서관 API 토큰)}, {libraryID: 1}).libraryID`.
+      3. 기존에 꽂혀(소유하고) 있던 책에 대한 소유권을 제거한다: `db.books.update({libraryID: (그 도서관 ID), bookcaseNumber: (그 책장 번호)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
+      4. 인수에 명시된 책을 소유한다: `db.books.update({libraryID: (그 도서관 ID), bookCode: {$in: (그 책 코드들로 이루어진 배열)}}, {$set: {bookcaseNumber: (그 책장 번호)}}, {multi: true})`.
     - 반환 값
       - 성공 시, `{"success": true}`.
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
@@ -69,7 +69,7 @@
 
 ## 사용자(도서관 이용자)를 위한 것 - 3개의 API가 문서화되었음.
 
-  - **회원 가입하기** :x: :boom:
+  - **회원 가입하기** :x:
     - 요청
       - POST
       - `/API/user/register`
@@ -78,11 +78,13 @@
       - password
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. 입력된 ID가 이미 등록된 계정의 ID인지 확인한다.
-      3. 입력된 암호에 대한 해시를 생성한다.
-      4. `db.Accounts.insertOne({ID: (그 계정 ID), passwordHash: (그 암호에 대한 해시), type: type: "user", information: {usingLibraries: []}})`
+      2. 입력된 ID가 이미 등록된 계정의 ID인지 엄격하지 않게 확인한다: `db.accounts.findOne({ID: (그 계정 ID)}, {"_id": 1})`. 만약 그렇다면, `{"success": false, "reason": "The account already exists."}`를 반환한다.
+      3. 입력된 암호에 대한 해시를 생성한다. 이는 연산 비용이 많이 드는 작업이다.
+      4. 계정이 이미 있지 않으면 계정을 생성한다: `db.accounts.updateOne({ID: (그 계정 ID)}, {ID: (그 계정 ID), passwordHash: (그 암호에 대한 해시), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
+      5. 4번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The account already exists."}`를 반환한다.
     - 반환 값
       - 성공 시, `{"success": true}`.
+      - `{"success": false, "reason": "The account already exists."}`
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
 
   - **사용자 코드를 소유하기** :x:
@@ -94,7 +96,7 @@
       - `userCode`: 소유할 사용자 코드이다.
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. `queryResult = db.Libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (그 사용자 코드), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
+      2. `queryResult = db.libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (그 사용자 코드), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
       3. 만약 데이터베이스 오류가 나면, `{"success": false, "reason": "Something is wrong with the database."}`를 반환한다.
       4. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
       5. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
@@ -113,7 +115,7 @@
       - `noGET`: 반드시 참 값이어야 한다.
     - 동작
       1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "user"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not a user!"}`를 반환한다.
       4. `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`를 반환한다.
     - 반환 값
@@ -134,7 +136,7 @@
       - bookCode: 이것은 그 책의 RFID 태그에 기록되어 있어야 한다.
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.Accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
+      2. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
       3. 그 책이 이미 있지 않으면 그 책을 추가한다: `db.books.updateOne({libraryID: (그 도서관 ID), bookCode: (그 책 코드)}, {$setOnInsert: {libraryID: (그 도서관 ID), bookCode: (그 책 코드), bookcaseNumber: null, ISBN: (그 국제 표준 도서 번호), bookcaseUpdatedAt: null}}, {upsert: true})`.
       4. 3번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The book already exists."}`를 반환한다.
     - 반환 값
@@ -150,9 +152,9 @@
       - `noGET`: 반드시 참 값이어야 한다.
     - 동작
       1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
-      4. `theLibraryInformation = db.Libraries.findOne({libraryID: theAccount.information.libraryID})`
+      4. `theLibraryInformation = db.libraries.findOne({libraryID: theAccount.information.libraryID})`
       5. `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`를 반환한다.
     - 반환 값
       - 성공 시, `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰), "userCodes": (그 사용자 코드들에 대한 정보)}`.
@@ -166,11 +168,11 @@
       - `noGET`: 반드시 참 값이어야 한다.
     - 동작
       1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       4. 무작위의 사용자 코드를 생성한다: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. 생성된 사용자 코드가 이미 그 도서관에 존재하는지 확인한다: `db.Libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (새롭게 생성된 사용자 코드)}, {"_id": 1})`. 만약 그렇다면, 4번 동작으로 간다.
-      6. `db.Libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (새롭게 생성된 사용자 코드), userID: null, permission: []}}})`
+      5. 생성된 사용자 코드가 이미 그 도서관에 존재하는지 확인한다: `db.libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (새롭게 생성된 사용자 코드)}, {"_id": 1})`. 만약 그렇다면, 4번 동작으로 간다.
+      6. `db.libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (새롭게 생성된 사용자 코드), userID: null, permission: []}}})`
       7. `JSON.stringify({"success": true, "newUserCode": (새롭게 생성된 사용자 코드)})`를 반환한다.
     - 반환 값
       - 성공 시, `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`.
@@ -186,8 +188,8 @@
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
       2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
-      3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.Libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (권한을 설정할 사용자 코드)}, {$set: {"userCodes.$.permission": (설정할 권한들)}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`가 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
+      3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      4. `db.libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (권한을 설정할 사용자 코드)}, {$set: {"userCodes.$.permission": (설정할 권한들)}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`가 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
       5. 
     - 반환 값:star:
 
@@ -200,8 +202,8 @@
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
       2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
-      3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.Libraries.updateOne({libraryID: (그 도서관 ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (제거할 사용자 코드)}}}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`이 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
+      3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      4. `db.libraries.updateOne({libraryID: (그 도서관 ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (제거할 사용자 코드)}}}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`이 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
       5. :star: 아니면 성공.
     - 반환 값
       - 성공 시, `{"success": true}`.
@@ -218,8 +220,8 @@
       2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       3. 새로운 도서관 API 토큰이 될 무작위의 긴 문자열을 생성한다.
       4. 그것이 기존의 도서관 API 토큰과 같은지 확인한다. 만약 그렇다면, 3번 동작으로 간다.
-      5. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
-      6. `db.Libraries.updateOne({libraryID: (그 도서관 ID)}, {$set: {libraryAPIToken: (그 새로운 도서관 API 토큰)}})`
+      5. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
+      6. `db.libraries.updateOne({libraryID: (그 도서관 ID)}, {$set: {libraryAPIToken: (그 새로운 도서관 API 토큰)}})`
     - 반환 값
       - 성공 시, `{"success": true}`.
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
@@ -255,27 +257,27 @@
 # LibraryLight 데이터베이스 구조
 DB:
   - LibraryLight
-    - Accounts
+    - accounts
       - ID
       - passwordHash
       - type: "administrator" | "developer" | "user"
       - information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}, ...]}
-    - Libraries
+    - libraries
       - libraryID
       - libraryAPIToken
       - userCodes: [ {
         - userCode
         - userID: null | "something"
         - permission: ["borrowable", "lightable"] }, ...]
-    - Books
+    - books
       - ISBN
       - libraryID
       - bookcaseNumber: <Raspberry Pi>
       - bookcaseUpdatedAt: $currentDate
       - bookCode: <RFID>
-    - Lights
+    - lights
       - :star:
-    - BookInformation
+    - bookInformation
       - ISBN
       - title: {main, sub1, sub2}
       - description
