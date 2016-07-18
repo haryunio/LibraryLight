@@ -135,8 +135,7 @@
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
       2. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.Accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
-      3. 그 책이 이미 추가되었는지 확인한다: `db.Books.findOne({libraryID: (그 도서관 ID), bookCode: (그 책 코드)}, {"_id": 1})`.
-      4. `db.Books.insertOne({ISBN: (그 국제 표준 도서 번호), libraryID: (그 도서관 ID), bookcaseNumber: null, bookCode: (그 책 코드)})`
+      3. 그 책이 이미 있지 않으면 그 책을 추가한다:star:: `db.books.updateOne({libraryID: (그 도서관 ID), bookCode: (그 책 코드)}, {$setOnInsert: {libraryID: (그 도서관 ID), bookCode: (그 책 코드), bookcaseNumber: null, ISBN: (그 국제 표준 도서 번호), bookcaseUpdatedAt: null}}, {upsert: true})`.
     - 반환 값
       - 성공 시, `{"success": true}`.
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
@@ -270,6 +269,7 @@ DB:
       - ISBN
       - libraryID
       - bookcaseNumber: <Raspberry Pi>
+      - bookcaseUpdatedAt: $currentDate
       - bookCode: <RFID>
     - Lights
       - :star:
