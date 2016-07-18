@@ -61,9 +61,9 @@
       - `bookCodes`: are read from the books' RFID tag.
     - Behavior
       1. Validates the inputs: `bookcaseNumber` cannot be a null.
-      2. Gets the library ID: `db.Libraries.findOne({libraryAPIToken: (the library API token)}, {libraryID: 1}).libraryID`.
-      3. Takes off its ownership from the books owned: `db.Books.update({libraryID: (the library ID), bookcaseNumber: (the bookcase number)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
-      4. Owns the specified books: `db.Books.update({libraryID: (the library ID), bookCode: {$in: (the array of the book codes)}}, {$set: {bookcaseNumber: (the bookcase number)}}, {multi: true})`.
+      2. Gets the library ID: `db.libraries.findOne({libraryAPIToken: (the library API token)}, {libraryID: 1}).libraryID`.
+      3. Takes off its ownership from the books owned: `db.books.update({libraryID: (the library ID), bookcaseNumber: (the bookcase number)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
+      4. Owns the specified books: `db.books.update({libraryID: (the library ID), bookCode: {$in: (the array of the book codes)}}, {$set: {bookcaseNumber: (the bookcase number)}}, {multi: true})`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
@@ -71,7 +71,7 @@
 
 ## For users - 3 APIs
 
-  - **To register** :x: :boom:
+  - **To register** :x:
     - Request
       - POST
       - `/API/user/register`
@@ -80,11 +80,13 @@
       - password
     - Behavior
       1. Validates the inputs.
-      2. Checks if the ID is unique.
-      3. Generates a hash for the password.
-      4. `db.Accounts.insertOne({ID: (the ID), passwordHash: (the hash for the password), type: type: "user", information: {usingLibraries: []}})`
+      2. Not strictly, checks if the ID is unique; `db.accounts.findOne({ID: (the ID)}, {"_id": 1})`. If isn't, returns `{"success": false, "reason": "The account already exists."}`.
+      3. Generates a hash for the password. This work costs a lot of process resources.
+      4. Creates an account if the account doesn't exist: `db.accounts.updateOne({ID: (the ID)}, {ID: (the ID), passwordHash: (the hash for the password), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
+      5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
       - `{"success": true}` on success.
+      - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": (the reason string)}` on failure.
 
   - **To own user-code** :x:
@@ -96,7 +98,7 @@
       - `userCode`: a user-code to own.
     - Behavior
       1. Validates the inputs.
-      2. `queryResult = db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user-code), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
+      2. `queryResult = db.libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user-code), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
       3. If a database error has happened, returns `{"success": false, "reason": "Something is wrong with the database."}`.
       4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
       5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
@@ -115,7 +117,7 @@
       - `noGET`: must be truthy.
     - Behavior
       1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "user"`. If it isn't, returns `{"success": false, "reason": "You are not a user!"}`.
       4. Returns `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`.
     - Returns
@@ -136,9 +138,9 @@
       - bookCode: should be stored in the book's RFID tag.
     - Behavior
       1. Validates the inputs.
-      2. Gets the ID of the administrator's library: `db.Accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
+      2. Gets the ID of the administrator's library: `db.accounts.fineOne({ID: request.session.loggedInAs}).information.libraryID`.
       3. Adds the book if the book was not added(if the book does not exist): `db.books.updateOne({libraryID: (the library ID), bookCode: (the book code)}, {$setOnInsert: {libraryID: (the library ID), bookCode: (the book code), bookcaseNumber: null, ISBN: (the ISBN), bookcaseUpdatedAt: null}}, {upsert: true})`.
-      4. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 3 returned exist, otherwise, returns `{"success": false, "reason": "The book already exists."}`.
+      4. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 3 returned exist; otherwise, returns `{"success": false, "reason": "The book already exists."}`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": "The book already exists."}`
@@ -152,9 +154,9 @@
       - `noGET`: must be truthy.
     - Behavior
       1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      4. `theLibraryInformation = db.Libraries.findOne({libraryID: theAccount.information.libraryID})`
+      4. `theLibraryInformation = db.libraries.findOne({libraryID: theAccount.information.libraryID})`
       5. Returns `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`.
     - Returns
       - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token), "userCodes": (information about the user-codes)}` on success.
@@ -168,11 +170,11 @@
       - `noGET`: must be truthy.
     - Behavior
       1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
-      2. `theAccount = db.Accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. Checks if it's duplicated: `db.Libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (the user code)}, {"_id": 1})`. If it already exists, goes to step 4.
-      6. `db.Libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
+      5. Checks if it's duplicated: `db.libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (the user code)}, {"_id": 1})`. If it already exists, goes to step 4.
+      6. `db.libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
       7. Returns `JSON.stringify({"success": true, "newUserCode": (the user code)})`
     - Returns
       - `{"success": true, "newUserCode": (the new user code)}` on success.
@@ -188,8 +190,8 @@
     - Behavior
       1. Validates the inputs.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      3. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.Libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      4. `db.libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
     - Returns
 
   - **To delete a specific user-code for an administrator's library** :x:
@@ -201,8 +203,8 @@
     - Behavior
       1. Validates the inputs.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      3. Gets the library ID: `db.Accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.Libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
+      4. `db.libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
       5. :star: Else, success.
     - Returns
       - `{"success": true}` on success.
@@ -219,8 +221,8 @@
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Generates a new random long string, which will be the new library API token.
       4. Checks if the new one is different than the existing(current) one. If it is, goes to step 3.
-      5. Gets the ID of the administrator's library: `db.Accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
-      6. `db.Libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new library API token)}})`.
+      5. Gets the ID of the administrator's library: `db.accounts.findOne({ID: request.session.loggedInAs}).information.libraryID`.
+      6. `db.libraries.updateOne({libraryID: (the library ID)}, {$set: {libraryAPIToken: (the new library API token)}})`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
@@ -256,26 +258,26 @@
 # LibraryLight DB structure
 DB:
   - LibraryLight
-    - Accounts
+    - accounts
       - ID
       - passwordHash
       - type: "administrator" | "developer" | "user"
       - information: {libraryID} | {} | {usingLibraries: [{libraryID, userCode}, ...]}
-    - Libraries
+    - libraries
       - libraryID
       - libraryAPIToken
       - userCodes: [ {
         - userCode
         - userID: null | "something"
         - permission: ["borrowable", "lightable"] }, ...]
-    - Books
+    - books
       - ISBN
       - libraryID
       - bookcaseNumber: <Raspberry Pi>
       - bookCode: <RFID>
-    - Lights
+    - lights
       - :star:
-    - BookInformation
+    - bookInformation
       - ISBN
       - title: {main, sub1, sub2}
       - description
