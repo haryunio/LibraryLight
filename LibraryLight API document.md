@@ -283,7 +283,7 @@ DB:
       - title: {main, sub1, sub2}
       - description
 
-## The significance of _user code_s
+## The significance of *user code*s
  If there is no _user code_, you have to submit your account ID to library administrators, in order to get the permissions to use the libraries. At that time, if you submit **others**' ID, the administrators will grant the permissions to their accounts and they will be the libraries' user. But this is not what they desired, therefore this is not a good way. To resolve this problem, I adopted a concept called ‘_user code_’; I resovled the problem above, by make one have to register his/her user codes with the IDs of the libraries that the user codes're from, to his/her account, in order to be a user of the libraries.
 
 
