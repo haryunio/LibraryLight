@@ -11,6 +11,7 @@
  - The type of accounts cannot be changed.
  - The APIs must only work with their corresponding permission(authentication).
  - All the APIs have to be atomic(so there have to not be any :boom:.).
+ - If a database error happens when an API routine is working, `{"success": false, "reason": "Something is wrong with the database."}` will be returned.
 
 ## Problems
 ### **How to prevent the query confliction?**
@@ -98,11 +99,10 @@
       - `userCode`: a user-code to own.
     - Behavior
       1. Validates the inputs.
-      2. `queryResult = db.libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user-code), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
-      3. If a database error has happened, returns `{"success": false, "reason": "Something is wrong with the database."}`.
-      4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
-      5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
-      6. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
+      2. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
+      3. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
+      4. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
+      5. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
     - Returns
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
@@ -146,21 +146,38 @@
       - `{"success": false, "reason": "The book already exists."}`
       - `{"success": false, "reason": (the reason string)}` on failure.
 
-  - **To get information about the administrator's library** :x:
+  - **To get the information about the administrator's library** :x:
     - Request
       - POST
-      - `/API/administrator/libraryInformation` or `/API/admin/libraryInformation`
+      - `/API/administrator/getLibraryInformation` or `/API/admin/getLibraryInformation`
     - Parameters
       - `noGET`: must be truthy.
     - Behavior
       1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      4. `theLibraryInformation = db.libraries.findOne({libraryID: theAccount.information.libraryID})`
-      5. Returns `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`.
+      4. `theLibraryInformation = db.libraries.findOne({"libraryID": theAccount.information.libraryID}, {"_id": 0})`
+      5. Returns `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken})`.
     - Returns
-      - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token), "userCodes": (information about the user-codes)}` on success.
-      - `{"success": false}` on failure.
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
+      - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token)}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+
+  - **To get the information about the user codes for the administrator's library** :x:
+    - Request
+      - `/API/administrator/getUserCodes` or `/API/admin/getUserCodes`
+    - Parameters
+      - `noGET`: must be truthy.
+    - Behavior
+      1. Checks if `noGET` is truthy. If it isn't, returns `{"success": false, "reason": "noGET is not truthy."}`.
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      4. `theUserCodes = db.userCodes.find({"libraryID": theAccount.information.libraryID}, {"libraryID": 1, "userCode": 1, "userID": 1, "permission": 1, "_id": 0})`
+      5. Returns `JSON.stringify({"success": true, "userCodes": theUserCodes})`.
+    - Returns
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      - `{"success": true, "userCodes": (the information about the user codes):star:<In a specific array form.>}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To generate a user-code and make it under control** :x: :boom:
     - Request
@@ -179,6 +196,7 @@
     - Returns
       - `{"success": true, "newUserCode": (the new user code)}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To set permissions of a specific user-code.** :x:
     - Request
@@ -193,6 +211,7 @@
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
       4. `db.libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
     - Returns
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To delete a specific user-code for an administrator's library** :x:
     - Request
@@ -209,6 +228,7 @@
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To generate a new library API token and update it** :x:
     - Request
@@ -267,6 +287,7 @@ DB:
       - libraryID
       - libraryAPIToken
     - userCodes
+      - libraryID: (the ID of the library where the user code is valid)
       - userCode: (a string consists of 20 alphanumeric characters)
       - userID: null | "something"
       - permission: {"borrowable": true|false, "lightable": true|false}
@@ -292,8 +313,6 @@ DB:
 ```
 userCode
 
-/API/admin/libraryInformation
-/API/user/ownUserCode
 /API/admin/newUserCode
 /API/admin/setPermissions
 /API/admin/deleteUserCode
