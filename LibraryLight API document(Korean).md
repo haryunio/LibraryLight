@@ -10,6 +10,7 @@
  - 계정의 유형은 바뀌지 않는다.
  - API들은 각기 요구되는 권한(인증)이 있어야 동작한다.
  - 모든 API들은 원자적이어야 한다(즉 :boom:이 없어야 한다.).
+ - API 루틴이 실행되고 있을 때에 데이터베이스 오류가 나면, `{"success": false, "reason": "Something is wrong with the database."}`가 반환된다.
 
 ## 문제점
 ### **쿼리 충돌을 어떻게 방지할 것인가?**
@@ -86,6 +87,7 @@
       - 성공 시, `{"success": true}`.
       - `{"success": false, "reason": "The account already exists."}`
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **사용자 코드를 소유하기** :x:
     - 요청
@@ -96,11 +98,10 @@
       - `userCode`: 소유할 사용자 코드이다.
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. `queryResult = db.libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (그 사용자 코드), "userCodes.$.userID": null}, {$set: {"userCodes.$.userID": request.session.loggedInAs}})`
-      3. 만약 데이터베이스 오류가 나면, `{"success": false, "reason": "Something is wrong with the database."}`를 반환한다.
-      4. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
-      5. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
-      6. 그것도 아니면, `{"success": false, "reason": "Something unexpected has happened!"}`를 반환한다.
+      2. 그 사용자 코드가 존재하고 소유되어 있지 않다면 소유한다: `queryResult = db.userCodes.updateOne({libraryID: (그 도서관 ID), userCode: (그 사용자 코드), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
+      3. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
+      4. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
+      5. 그것도 아니면, `{"success": false, "reason": "Something unexpected has happened!"}`를 반환한다.
     - 반환 값
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
@@ -147,18 +148,35 @@
   - **그 관리자(요청자)의 도서관에 대한 정보 얻기** :x:
     - 요청
       - POST
-      - `/API/administrator/libraryInformation` 또는 `/API/admin/libraryInformation`
+      - `/API/administrator/getLibraryInformation` 또는 `/API/admin/getLibraryInformation`
     - 인자
       - `noGET`: 반드시 참 값이어야 한다.
     - 동작
       1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
-      4. `theLibraryInformation = db.libraries.findOne({libraryID: theAccount.information.libraryID})`
+      4. `theLibraryInformation = db.libraries.findOne({"libraryID": theAccount.information.libraryID}, {"_id": 0})`
       5. `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰), "userCodes": (그 사용자 코드들에 대한 정보)}`.
-      - 실패 시, `{"success": false}`.
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
+      - `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰)}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+
+  - **그 관리자(요청자)의 도서관의 사용자 코드에 대한 정보 얻기** :x:
+    - 요청
+      - `/API/administrator/getUserCodes` 또는 `/API/admin/getUserCodes`
+    - 인자
+      - `noGET`: 반드시 참 값이어야 한다.
+    - 동작
+      1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
+      4. `theUserCodes = db.userCodes.find({"libraryID": theAccount.information.libraryID}, {"libraryID": 1, "userCode": 1, "userID": 1, "permission": 1, "_id": 0})`
+      5. `JSON.stringify({"success": true, "userCodes": theUserCodes})`를 반환한다.
+    - 반환 값
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      - `{"success": true, "userCodes": (그 사용자 코드들에 대한 정보):star:<배열의 형태로 나타낼 것>}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **사용자 코드를 생성하고 관리하에 두기** :x: :boom:
     - 요청
@@ -266,6 +284,7 @@ DB:
       - libraryID
       - libraryAPIToken
     - userCodes
+      - libraryID: (그 사용자 코드가 유효한 도서관의 ID)
       - userCode: (20 자의, 반각 숫자 또는 라틴 알파벳으로 이루어진 문자열)
       - userID: null | "이 사용자 코드에 해당하는 계정의 ID"
       - permission: {"borrowable": true|false, "lightable": true|false}
@@ -291,8 +310,6 @@ DB:
 ```
 userCode
 
-/API/admin/libraryInformation
-/API/user/ownUserCode
 /API/admin/newUserCode
 /API/admin/setPermissions
 /API/admin/deleteUserCode
