@@ -266,18 +266,35 @@ DB:
     - libraries
       - libraryID
       - libraryAPIToken
-      - userCodes: [ {
-        - userCode
-        - userID: null | "something"
-        - permission: ["borrowable", "lightable"] }, ...]
+    - userCodes
+      - userCode: (a string consists of 20 alphanumeric characters)
+      - userID: null | "something"
+      - permission: {"borrowable": true|false, "lightable": true|false}
+    - lights
+      - :star:
     - books
       - ISBN
       - libraryID
       - bookcaseNumber: <Raspberry Pi>
+      - bookcaseUpdatedAt: $currentDate
       - bookCode: <RFID>
-    - lights
-      - :star:
     - bookInformation
       - ISBN
       - title: {main, sub1, sub2}
       - description
+
+## The significance of _user code_s
+ If there is no _user code_, you have to submit your account ID to library administrators, in order to get the permissions to use the libraries. At that time, if you submit **others**' ID, the administrators will grant the permissions to their accounts and they will be the libraries' user. But this is not what they desired, therefore this is not a good way. To resolve this problem, I adopted a concept called ‘_user code_’; I resovled the problem above, by make one have to register his/her user codes with the IDs of the libraries that the user codes're from, to his/her account, in order to be a user of the libraries.
+
+
+
+# MODIFING DB & API
+```
+userCode
+
+/API/admin/libraryInformation
+/API/user/ownUserCode
+/API/admin/newUserCode
+/API/admin/setPermissions
+/API/admin/deleteUserCode
+```
