@@ -313,7 +313,7 @@ DB:
 ```
 userCode
 
-/API/admin/newUserCode
+/API/admin/newUserCode(한국어 -> 영어 번역 필요)
 /API/admin/setPermissions
 /API/admin/deleteUserCode
 ```
