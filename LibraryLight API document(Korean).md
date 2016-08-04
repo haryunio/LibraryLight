@@ -178,7 +178,7 @@
       - `{"success": true, "userCodes": (그 사용자 코드들에 대한 정보):star:<배열의 형태로 나타낼 것>}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
-  - **사용자 코드를 생성하고 관리하에 두기** :x: :boom:
+  - **사용자 코드를 생성하고 관리하에 두기** :x:
     - 요청
       - POST
       - `/API/administrator/newUserCode` 또는 `/API/admin/newUserCode`
@@ -189,12 +189,12 @@
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       4. 무작위의 사용자 코드를 생성한다: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. 생성된 사용자 코드가 이미 그 도서관에 존재하는지 확인한다: `db.libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (새롭게 생성된 사용자 코드)}, {"_id": 1})`. 만약 그렇다면, 4번 동작으로 간다.
-      6. `db.libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (새롭게 생성된 사용자 코드), userID: null, permission: []}}})`
+      5. 생성된 사용자 코드가 그 도서관에 존재하지 않으면 그 사용자 코드를 추가한다.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드)}, userID: null, permission: []}, {upsert: true})`.
+      6. 이미 존재하면(`if(queryResult.upsertedId === undefined)`) 4번 동작으로 가되, 이 행위를 5번 했다면 `{"success": false, "reason": "Could not generate new user code."}`를 반환한다.
       7. `JSON.stringify({"success": true, "newUserCode": (새롭게 생성된 사용자 코드)})`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`.
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`
+      - `{"success": false, "reason": "noGET is not truthy."}`
 
   - **특정한 사용자 코드의 권한 설정하기** :x:
     - 요청
