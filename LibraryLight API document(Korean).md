@@ -207,9 +207,12 @@
       1. 입력된 인수가 유효한지 확인한다.
       2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.libraries.updateOne({libraryID: (그 도서관 ID), "userCodes.$.userCode": (권한을 설정할 사용자 코드)}, {$set: {"userCodes.$.permission": (설정할 권한들)}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`가 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
-      5. 
-    - 반환 값:star:
+      4. `db.userCodes.updateOne({libraryID: (그 도서관 ID), "userCode": (권한을 설정할 사용자 코드)}, {$set: {"permission": (설정할 권한들)}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`가 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
+      5. `{"success": true}`를 반환한다.
+    - 반환 값
+      - `{"success": true}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
 
   - **그 도서관의 특정한 사용자 코드 제거하기** :x:
     - 요청
@@ -310,7 +313,5 @@ DB:
 ```
 userCode
 
-/API/admin/newUserCode
-/API/admin/setPermissions
 /API/admin/deleteUserCode
 ```
