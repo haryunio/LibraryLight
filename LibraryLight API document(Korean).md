@@ -224,11 +224,13 @@
       1. 입력된 인수가 유효한지 확인한다.
       2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.libraries.updateOne({libraryID: (그 도서관 ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (제거할 사용자 코드)}}}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`이 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
-      5. :star: 아니면 성공.
+      4. `db.userCodes.deleteOne({libraryID: (그 도서관 ID), userCode: (제거할 사용자 코드)})` 후에, 만약 그 반환 값에 `1`의 값을 가진 `deletedCount` 속성이 없으면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
+      5. `{"success": true}`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true}`.
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": true}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **새로운 도서관 API 토큰을 생성하여 그것을 도서관 API 토큰으로 하기** :x:
     - 요청
@@ -311,7 +313,4 @@ DB:
 
 # MODIFING DB & API
 ```
-userCode
-
-/API/admin/deleteUserCode
 ```
