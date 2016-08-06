@@ -223,11 +223,12 @@
       1. Validates the inputs.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.libraries.updateOne({libraryID: (the library ID)}, {$pull: {userCodes: {$elemMatch: {userCode: (the user code)}}}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
-      5. :star: Else, success.
+      4. Queries `db.userCodes.deleteOne({libraryID: (the library ID), userCode: (the user code to delete)})`; if the returned does not have `deletedCount` property is `1`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      5. Returns `{"success": true}`.
     - Returns
-      - `{"success": true}` on success.
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": true}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
+      - `{"success": false, "reason": "The user code does not exist."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To generate a new library API token and update it** :x:
@@ -315,5 +316,4 @@ userCode
 
 /API/admin/newUserCode(한국어 -> 영어 번역 필요)
 /API/admin/setPermissions
-/API/admin/deleteUserCode
 ```
