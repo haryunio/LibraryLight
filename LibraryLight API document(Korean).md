@@ -313,7 +313,7 @@ DB:
       - libraryID
       - bookcaseNumber
       - lightColor
-      - findingBook
+      - ISBN
       - lighter
     - books
       - ISBN
