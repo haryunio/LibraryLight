@@ -125,6 +125,20 @@
       - `{"success": false, "reason": "You are not a user!"}`
       - `{"success": true, "usingLibraries": [{"libraryID": (그 도서관 ID), "userCode": (그 도서관에서의 그 사용자(요청자)의 코드)}, ...]}`
 
+  - **특정한 책이 있는 책장에 대한 점등 요청을 보내기** :x: :star:
+    - 요청
+      - POST
+      - `/API/user/light`
+    - 인자
+      - `ISBN`: 그 책의 ISBN.
+    - 동작
+      1. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
+      2. `theAccount.type === "user"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not a user!"}`를 반환한다.
+      3. `
+    - 반환 값
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "You are not a user!"}`
+
 
 ## 도서관 관리자를 위한 것 - 6개의 API가 문서화되었음.
 
@@ -193,8 +207,9 @@
       6. 이미 존재하면(`if(queryResult.upsertedId === undefined)`) 4번 동작으로 가되, 이 행위를 5번 했다면 `{"success": false, "reason": "Could not generate new user code."}`를 반환한다.
       7. `JSON.stringify({"success": true, "newUserCode": (새롭게 생성된 사용자 코드)})`를 반환한다.
     - 반환 값
-      - `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`
       - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`
 
   - **특정한 사용자 코드의 권한 설정하기** :x:
     - 요청
@@ -213,6 +228,7 @@
       - `{"success": true}`
       - `{"success": false, "reason": "The user code does not exist."}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **그 도서관의 특정한 사용자 코드 제거하기** :x:
     - 요청
@@ -294,7 +310,9 @@ DB:
       - userID: null | "이 사용자 코드에 해당하는 계정의 ID"
       - permission: {"borrowable": true|false, "lightable": true|false}
     - lights
-      - :star:
+      - lightColor
+      - findingBook
+      - lighter
     - books
       - ISBN
       - libraryID
