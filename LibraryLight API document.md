@@ -52,7 +52,7 @@
 
 
 ## For Raspberry Pi(bookcase)s - 1 API
-  - **To update information of books within bookcases** :x:
+  - **To update information of books within bookcases** :x: :star:
     - Request
       - POST
       - `/API/takeMyBooks`
@@ -190,13 +190,13 @@
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. Checks if it's duplicated: `db.libraries.findOne({libraryID: theAccount.information.libraryID, "userCodes.$.userCode": (the user code)}, {"_id": 1})`. If it already exists, goes to step 4.
-      6. `db.libraries.updateOne({libraryID: theAccount.information.libraryID}, {$push: {userCodes: {userCode: (the user code), userID: null, permission: []}}})`
-      7. Returns `JSON.stringify({"success": true, "newUserCode": (the user code)})`
+      5. Adds the user code if the user code for the library does not exist.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, userID: null, permission: []}, {upsert: true})`.
+      6. If it already exists(`if(queryResult.upsertedId === undefined)`), goes to the step 4, unless this was done five times; if so, returns `{"success": false, "reason": "Could not generate new user code."}`.
+      7. Returns `JSON.stringify({"success": true, "newUserCode": (the newly generated user code)})`.
     - Returns
-      - `{"success": true, "newUserCode": (the new user code)}` on success.
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "noGET is not truthy."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "newUserCode": (the newly generated user code)}`
 
   - **To set permissions of a specific user-code.** :x:
     - Request
@@ -209,8 +209,12 @@
       1. Validates the inputs.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.libraries.updateOne({libraryID: (the library ID), "userCodes.$.userCode": (the user code)}, {$set: {"userCodes.$.permission": (the permissions)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      4. `db.userCodes.updateOne({libraryID: (그 도서관 ID), "userCode": (권한을 설정할 사용자 코드)}, {$set: {"permission": (설정할 권한들)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      5. Returns `{"success": true}`.
     - Returns
+      - `{"success": true}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To delete a specific user-code for an administrator's library** :x:
@@ -293,7 +297,9 @@ DB:
       - userID: null | "something"
       - permission: {"borrowable": true|false, "lightable": true|false}
     - lights
-      - :star:
+      - lightColor
+      - findingBook
+      - lighter
     - books
       - ISBN
       - libraryID
@@ -312,8 +318,4 @@ DB:
 
 # MODIFING DB & API
 ```
-userCode
-
-/API/admin/newUserCode(한국어 -> 영어 번역 필요)
-/API/admin/setPermissions
 ```
