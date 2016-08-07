@@ -310,6 +310,8 @@ DB:
       - userID: null | "이 사용자 코드에 해당하는 계정의 ID"
       - permission: {"borrowable": true|false, "lightable": true|false}
     - lights
+      - libraryID
+      - bookcaseNumber
       - lightColor
       - findingBook
       - lighter
