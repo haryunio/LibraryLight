@@ -297,6 +297,8 @@ DB:
       - userID: null | "something"
       - permission: {"borrowable": true|false, "lightable": true|false}
     - lights
+      - libraryID
+      - bookcaseNumber
       - lightColor
       - findingBook
       - lighter
