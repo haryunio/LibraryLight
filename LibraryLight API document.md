@@ -52,7 +52,7 @@
 
 
 ## For Raspberry Pi(bookcase)s - 1 API
-  - **To update information of books within bookcases** :x: :star:
+  - **To update information of books within bookcases** :x:
     - Request
       - POST
       - `/API/takeMyBooks`
