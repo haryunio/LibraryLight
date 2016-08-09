@@ -61,8 +61,9 @@
     - 동작
       1. 입력이 유효한지 검사한다. 이때에 `bookcaseNumber`는 `null`이면 안 된다.
       2. 도서관 ID를 얻는다: `db.libraries.findOne({libraryAPIToken: (그 도서관 API 토큰)}, {libraryID: 1}).libraryID`.
-      3. 기존에 꽂혀(소유하고) 있던 책에 대한 소유권을 제거한다: `db.books.update({libraryID: (그 도서관 ID), bookcaseNumber: (그 책장 번호)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
-      4. 인수에 명시된 책을 소유한다: `db.books.update({libraryID: (그 도서관 ID), bookCode: {$in: (그 책 코드들로 이루어진 배열)}}, {$set: {bookcaseNumber: (그 책장 번호)}}, {multi: true})`.
+      3. `global.TaskManager.addTask((이후의 처리가 담긴 함수), "takeMyBooks", (그 도서관 ID));`
+      4. 기존에 꽂혀(소유하고) 있던 책에 대한 소유권을 제거한다: `db.books.update({libraryID: (그 도서관 ID), bookcaseNumber: (그 책장 번호)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
+      5. 인수에 명시된 책을 소유한다: `db.books.update({libraryID: (그 도서관 ID), bookCode: {$in: (그 책 코드들로 이루어진 배열)}}, {$set: {bookcaseNumber: (그 책장 번호)}}, {multi: true})`.
     - 반환 값
       - 성공 시, `{"success": true}`.
       - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
