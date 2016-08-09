@@ -63,8 +63,9 @@
     - Behavior
       1. Validates the inputs: `bookcaseNumber` cannot be a null.
       2. Gets the library ID: `db.libraries.findOne({libraryAPIToken: (the library API token)}, {libraryID: 1}).libraryID`.
-      3. Takes off its ownership from the books owned: `db.books.update({libraryID: (the library ID), bookcaseNumber: (the bookcase number)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
-      4. Owns the specified books: `db.books.update({libraryID: (the library ID), bookCode: {$in: (the array of the book codes)}}, {$set: {bookcaseNumber: (the bookcase number)}}, {multi: true})`.
+      3. `global.TaskManager.addTask((a function that contains the process below), "takeMyBooks", (the library ID));`
+      4. Takes off its ownership from the books owned: `db.books.update({libraryID: (the library ID), bookcaseNumber: (the bookcase number)}, {$set: {bookcaseNumber: null}}, {multi: true})`.
+      5. Owns the specified books: `db.books.update({libraryID: (the library ID), bookCode: {$in: (the array of the book codes)}}, {$set: {bookcaseNumber: (the bookcase number)}}, {multi: true})`.
     - Returns
       - `{"success": true}` on success.
       - `{"success": false, "reason": (the reason string)}` on failure.
