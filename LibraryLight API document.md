@@ -100,11 +100,13 @@
       - `userCode`: a user-code to own.
     - Behavior
       1. Validates the inputs.
-      2. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
-      3. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
-      4. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
-      5. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
+      2. If the user has a user code for the library(`db.userCodes.findOne({libraryID: (the library ID), userID: request.session.loggedInAs})`), returns `{"success": false, "reason": "You already have a user code for the library."}`.
+      3. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
+      4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
+      5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
+      6. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
     - Returns
+      - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
