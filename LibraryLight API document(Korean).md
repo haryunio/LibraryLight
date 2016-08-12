@@ -319,6 +319,7 @@ DB:
       - lightColor
       - ISBN
       - lighter
+      - expirationTime
     - books
       - ISBN
       - libraryID
