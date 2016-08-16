@@ -34,10 +34,10 @@
       2. Checks if the input is correct.
       3. `request.session.loggedInAs = ID`
     - Returns
-      - `{"success": false, reason: "The ID is not valid."}`
-      - `{"success": false, reason: "The password is not valid."}`
-      - When the password is wrong or the account to log-in does not exist, `{"success": false, reason: "Could not log-in."}`.
-      - `{"success": false, reason: "An error occurred when comparing the password with the hash!"}`
+      - `{"success": false, "reason": "The ID is not valid."}`
+      - `{"success": false, "reason": "The password is not valid."}`
+      - When the password is wrong or the account to log-in does not exist, `{"success": false, "reason": "Could not log-in."}`.
+      - `{"success": false, "reason": "An error occurred when comparing the password with the hash!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
 
@@ -92,8 +92,8 @@
       5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
       - `{"success": true}`
-      - `{"success": false, reason: "The ID is not valid."}`
-      - `{"success": false, reason: "The password is not valid."}`
+      - `{"success": false, "reason": "The ID is not valid."}`
+      - `{"success": false, "reason": "The password is not valid."}`
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
