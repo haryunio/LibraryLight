@@ -200,7 +200,7 @@
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. Adds the user code if the user code for the library does not exist.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, userID: null, permission: []}, {upsert: true})`.
+      5. Adds the user code if the user code for the library does not exist.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, userID: null, permission: {"borrowable": false, "lightable": false}}, {upsert: true})`.
       6. If it already exists(`if(queryResult.upsertedId === undefined)`), goes to the step 4, unless this was done five times; if so, returns `{"success": false, "reason": "Could not generate new user code."}`.
       7. Returns `JSON.stringify({"success": true, "newUserCode": (the newly generated user code)})`.
     - Returns
@@ -208,7 +208,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "newUserCode": (the newly generated user code)}`
 
-  - **To set permissions of a specific user-code.** :x:
+  - **To set permissions of a specific user-code.** :x: :star:
     - Request
       - POST
       - `/API/administrator/setPermissions` or `/API/admin/setPermissions`
@@ -330,6 +330,6 @@ DB:
 
 
 
-# MODIFING DB & API
+# MODIFYING DB & API
 ```
 ```
