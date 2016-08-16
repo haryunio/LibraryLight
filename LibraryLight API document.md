@@ -41,18 +41,19 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
 
-  - **To logout** :x:
+  - **To logout**
     - Request
       - POST
       - `/API/logout`
     - Parameters
       - `noGET`: must be truthy.
     - Behavior
-      1. Checks if `noGET` is truthy.
+      1. Checks if `noGET` is truthy. If is not, returns `{"success": false, "reason": "noGET is not truthy."}`.
       2. `request.session.loggedInAs = null`.
+      3. Returns `{"success": true}`.
     - Returns
-      - `{"success": true}` on success.
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": true}`
+      - `{"success": false, "reason": "noGET is not truthy."}`
 
 
 ## For Raspberry Pi(bookcase)s - 1 API
