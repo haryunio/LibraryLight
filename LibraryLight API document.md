@@ -88,8 +88,8 @@
       5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
       - `{"success": true}`
-      - `{success: false, reason: "The ID is not valid."}`
-      - `{success: false, reason: "The password is not valid."}`
+      - `{"success": false, reason: "The ID is not valid."}`
+      - `{"success": false, reason: "The password is not valid."}`
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
