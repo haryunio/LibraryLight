@@ -88,6 +88,8 @@
       5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
       - `{"success": true}`
+      - `{success: false, reason: "The ID is not valid."}`
+      - `{success: false, reason: "The password is not valid."}`
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
@@ -212,7 +214,7 @@
       1. Validates the inputs.
       2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.userCodes.updateOne({libraryID: (그 도서관 ID), "userCode": (권한을 설정할 사용자 코드)}, {$set: {"permission": (설정할 권한들)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      4. `db.userCodes.updateOne({libraryID: (the library ID), "userCode": (the user code to set its permissions)}, {$set: {"permission": (permissions to set)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
       5. Returns `{"success": true}`.
     - Returns
       - `{"success": true}`
