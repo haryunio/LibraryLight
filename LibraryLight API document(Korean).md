@@ -39,7 +39,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
 
-  - **로그아웃 하기** :x:
+  - **로그아웃 하기**
     - 요청
       - POST
       - `/API/logout`
@@ -48,9 +48,10 @@
     - 동작
       1. `noGET`이 참 값인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "noGET is not truthy."}`를 반환한다.
       2. `request.session.loggedInAs = null`.
+      3. `{"success": true}`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true}`.
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": true}`
+      - `{"success": false, "reason": "noGET is not truthy."}`
 
 
 ## Raspberry Pi(책장)을 위한 것 - 1개의 API가 문서화되었음.
