@@ -73,7 +73,7 @@
 
 ## For users - 3 APIs
 
-  - **To register** :x:
+  - **To register**
     - Request
       - POST
       - `/API/user/register`
@@ -87,9 +87,9 @@
       4. Creates an account if the account doesn't exist: `db.accounts.updateOne({ID: (the ID)}, {ID: (the ID), passwordHash: (the hash for the password), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
       5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
-      - `{"success": true}` on success.
+      - `{"success": true}`
       - `{"success": false, "reason": "The account already exists."}`
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **To own user-code** :x:
     - Request
