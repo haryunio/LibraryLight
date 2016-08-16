@@ -22,20 +22,24 @@
 
 ## General - 2 APIs
 
-  - **To login** :x:
+  - **To login**
     - Request
       - POST
       - `/API/login`
     - Parameters
-      - ID
-      - password
+      - `ID`
+      - `password`
     - Behavior
       1. Validates the inputs.
       2. Checks if the input is correct.
       3. `request.session.loggedInAs = ID`
     - Returns
-      - `{"success": true}` on success.
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, reason: "The ID is not valid."}`
+      - `{"success": false, reason: "The password is not valid."}`
+      - When the password is wrong or the account to log-in does not exist, `{"success": false, reason: "Could not log-in."}`.
+      - `{"success": false, reason: "An error occurred when comparing the password with the hash!"}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true}`
 
   - **To logout** :x:
     - Request
