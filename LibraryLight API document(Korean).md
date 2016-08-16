@@ -20,20 +20,24 @@
 
 ## 일반적인 것 - 2개의 API가 문서화되었음.
 
-  - **로그인 하기** :x:
+  - **로그인 하기**
     - 요청
       - POST
       - `/API/login`
     - 인자
-      - ID
-      - password
+      - `ID`
+      - `password`: 암호.
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
       2. 입력된 계정 정보가 맞는지 확인한다.
       3. `request.session.loggedInAs = ID`
     - 반환 값
-      - 성공 시, `{"success": true}`.
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": false, reason: "The ID is not valid."}`
+      - `{"success": false, reason: "The password is not valid."}`
+      - 암호가 잘못되었거나 로그인 하려는 계정이 존재하지 않을 때에, `{"success": false, reason: "Could not log-in."}`.
+      - `{"success": false, reason: "An error occurred when comparing the password with the hash!"}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true}`
 
   - **로그아웃 하기** :x:
     - 요청
