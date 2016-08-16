@@ -71,7 +71,7 @@
 
 ## 사용자(도서관 이용자)를 위한 것 - 3개의 API가 문서화되었음.
 
-  - **회원 가입하기** :x:
+  - **회원 가입하기**
     - 요청
       - POST
       - `/API/user/register`
@@ -85,9 +85,8 @@
       4. 계정이 이미 있지 않으면 계정을 생성한다: `db.accounts.updateOne({ID: (그 계정 ID)}, {ID: (그 계정 ID), passwordHash: (그 암호에 대한 해시), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
       5. 4번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The account already exists."}`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true}`.
+      - `{"success": true}`
       - `{"success": false, "reason": "The account already exists."}`
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
   - **사용자 코드를 소유하기** :x:
