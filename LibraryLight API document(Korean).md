@@ -86,6 +86,8 @@
       5. 4번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The account already exists."}`를 반환한다.
     - 반환 값
       - `{"success": true}`
+      - `{"success": false, reason: "The ID is not valid."}`
+      - `{"success": false, reason: "The password is not valid."}`
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
