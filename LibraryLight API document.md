@@ -98,7 +98,7 @@
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
-  - **To own user-code** :x:
+  - **To own user-code**
     - Request
       - POST
       - `/API/user/ownUserCode`
@@ -111,13 +111,13 @@
       3. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
       4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
       5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
-      6. Else, returns `{"success": false, "reason": "Something unexpected has happened!"}`.
     - Returns
+      - `{"success": false, "reason": "The library ID is not valid."}`
+      - `{"success": false, "reason": "The user code is not valid."}`
       - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": true}`
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
-      - `{"success": false, "reason": "Something unexpected has happened!"}`
+      - `{"success": true}`
 
   - **To get the list of libraries that is being used by the user** :x:
     - Request
