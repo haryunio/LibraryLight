@@ -38,6 +38,8 @@
       - `{"success": false, "reason": "An error occurred when comparing the password with the hash!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
+    - 비고
+      - 로그인된 상태에서 로그인할 수 있다.
 
   - **로그아웃 하기**
     - 요청
