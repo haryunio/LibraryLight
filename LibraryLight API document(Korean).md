@@ -114,6 +114,7 @@
     - 반환 값
       - `{"success": false, "reason": "The library ID is not valid."}`
       - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not a user!"}`
       - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
