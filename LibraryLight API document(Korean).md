@@ -105,13 +105,16 @@
       - `userCode`: 소유할 사용자 코드이다.
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. 그 도서관에 대한 사용자 코드를 이미 가지고 있으면(`db.userCodes.findOne({libraryID: (the library ID), userID: request.session.loggedInAs})`), `{"success": false, "reason": "You already have a user code for the library."}`를 반환한다.
-      3. 그 사용자 코드가 존재하고 소유되어 있지 않다면 소유한다: `queryResult = db.userCodes.updateOne({libraryID: (그 도서관 ID), userCode: (그 사용자 코드), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
-      4. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
-      5. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`.
+      3. `theAccount.type === "user"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not a user!"}`를 반환한다.
+      4. 그 도서관에 대한 사용자 코드를 이미 가지고 있으면(`db.userCodes.findOne({libraryID: (the library ID), userID: request.session.loggedInAs})`), `{"success": false, "reason": "You already have a user code for the library."}`를 반환한다.
+      5. 그 사용자 코드가 존재하고 소유되어 있지 않다면 소유한다: `queryResult = db.userCodes.updateOne({libraryID: (그 도서관 ID), userCode: (그 사용자 코드), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
+      6. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
+      7. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
     - 반환 값
       - `{"success": false, "reason": "The library ID is not valid."}`
       - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "You are not a user!"}`
       - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
