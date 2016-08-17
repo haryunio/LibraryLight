@@ -158,7 +158,7 @@
 
 ## 도서관 관리자를 위한 것 - 6개의 API가 문서화되었음.
 
-  - **도서관에 책 추가하기** :x:
+  - **도서관에 책 추가하기**
     - 요청
       - POST
       - `/API/administrator/addBook` 또는 `/API/admin/addBook`
@@ -171,9 +171,11 @@
       3. 그 책이 이미 있지 않으면 그 책을 추가한다: `db.books.updateOne({libraryID: (그 도서관 ID), bookCode: (그 책 코드)}, {$setOnInsert: {libraryID: (그 도서관 ID), bookCode: (그 책 코드), bookcaseNumber: null, ISBN: (그 국제 표준 도서 번호), bookcaseUpdatedAt: null}}, {upsert: true})`.
       4. 3번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The book already exists."}`를 반환한다.
     - 반환 값
-      - 성공 시, `{"success": true}`.
+      - `{"success": false, "reason": "The ISBN is not valid."}`
+      - `{"success": false, "reason": "The book code is not valid."}`
       - `{"success": false, "reason": "The book already exists."}`
-      - 실패 시, `{"success": false, "reason": (실패 까닭이 담긴 문자열)}`.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true}`
 
   - **그 관리자(요청자)의 도서관에 대한 정보 얻기** :x:
     - 요청
