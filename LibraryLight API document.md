@@ -40,6 +40,8 @@
       - `{"success": false, "reason": "An error occurred when comparing the password with the hash!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
+    - Notes
+      - You can log in when you are logged in.
 
   - **To logout**
     - Request
