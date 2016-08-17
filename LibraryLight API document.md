@@ -145,7 +145,7 @@
 
 ## For administrators - 6 APIs
 
-  - **To add a book in their libraries** :x:
+  - **To add a book in their libraries**
     - Request
       - POST
       - `/API/administrator/addBook` or `/API/admin/addBook`
@@ -158,9 +158,11 @@
       3. Adds the book if the book was not added(if the book does not exist): `db.books.updateOne({libraryID: (the library ID), bookCode: (the book code)}, {$setOnInsert: {libraryID: (the library ID), bookCode: (the book code), bookcaseNumber: null, ISBN: (the ISBN), bookcaseUpdatedAt: null}}, {upsert: true})`.
       4. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 3 returned exist; otherwise, returns `{"success": false, "reason": "The book already exists."}`.
     - Returns
-      - `{"success": true}` on success.
+      - `{"success": false, "reason": "The ISBN is not valid."}`
+      - `{"success": false, "reason": "The book code is not valid."}`
       - `{"success": false, "reason": "The book already exists."}`
-      - `{"success": false, "reason": (the reason string)}` on failure.
+      - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true}`
 
   - **To get the information about the administrator's library** :x:
     - Request
