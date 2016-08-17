@@ -96,7 +96,7 @@
       - `{"success": false, "reason": "The account already exists."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
 
-  - **사용자 코드를 소유하기** :x:
+  - **사용자 코드를 소유하기**
     - 요청
       - POST
       - `/API/user/ownUserCode`
@@ -109,13 +109,13 @@
       3. 그 사용자 코드가 존재하고 소유되어 있지 않다면 소유한다: `queryResult = db.userCodes.updateOne({libraryID: (그 도서관 ID), userCode: (그 사용자 코드), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
       4. 만약 `queryResult.modifiedCount === 1`이면, `{"success": true}`를 반환한다.
       5. 그것이 아니고 `queryResult.modifiedCount === 0`이라면, `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`를 반환한다.
-      6. 그것도 아니면, `{"success": false, "reason": "Something unexpected has happened!"}`를 반환한다.
     - 반환 값
+      - `{"success": false, "reason": "The library ID is not valid."}`
+      - `{"success": false, "reason": "The user code is not valid."}`
       - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": true}`
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
-      - `{"success": false, "reason": "Something unexpected has happened!"}`
+      - `{"success": true}`
 
   - **이용하고 있는 도서관 목록 얻기** :x:
     - 요청
