@@ -107,13 +107,16 @@
       - `userCode`: a user-code to own.
     - Behavior
       1. Validates the inputs.
-      2. If the user has a user code for the library(`db.userCodes.findOne({libraryID: (the library ID), userID: request.session.loggedInAs})`), returns `{"success": false, "reason": "You already have a user code for the library."}`.
-      3. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
-      4. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
-      5. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
+      2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`.
+      3. Checks if `theAccount.type === "user"`. If it isn't, returns `{"success": false, "reason": "You are not a user!"}`.
+      4. If the user has a user code for the library(`db.userCodes.findOne({libraryID: (the library ID), userID: request.session.loggedInAs})`), returns `{"success": false, "reason": "You already have a user code for the library."}`.
+      5. Owns the user code if it exists and isn't owned: `queryResult = db.userCodes.updateOne({libraryID: (the library ID), userCode: (the user code), userID: null}, {$set: {userID: request.session.loggedInAs}})`.
+      6. If `queryResult.modifiedCount === 1`, returns `{"success": true}`.
+      7. Else if `queryResult.modifiedCount === 0`, returns `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`.
     - Returns
       - `{"success": false, "reason": "The library ID is not valid."}`
       - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "You are not a user!"}`
       - `{"success": false, "reason": "You already have a user code for the library."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
