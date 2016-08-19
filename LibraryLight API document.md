@@ -91,7 +91,7 @@
       1. Validates the inputs.
       2. Not strictly, checks if the ID is unique; `db.accounts.findOne({ID: (the ID)}, {"_id": 1})`. If isn't, returns `{"success": false, "reason": "The account already exists."}`.
       3. Generates a hash for the password. This work costs a lot of process resources.
-      4. Creates an account if the account doesn't exist: `db.accounts.updateOne({ID: (the ID)}, {ID: (the ID), passwordHash: (the hash for the password), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
+      4. Creates an account if the account doesn't exist: `db.accounts.updateOne({ID: (the ID)}, {$setOnInsert: {ID: (the ID), passwordHash: (the hash for the password), type: "user", information: {usingLibraries: []}}}, {upsert: true})`.
       5. Returns `{"success": true}` if the `"upsertedId"` property of the object which the query in step 4 returned exist; otherwise, returns `{"success": false, "reason": "The account already exists."}`.
     - Returns
       - `{"success": true}`
