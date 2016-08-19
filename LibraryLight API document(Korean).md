@@ -196,7 +196,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰)}`
 
-  - **그 관리자(요청자)의 도서관의 사용자 코드에 대한 정보 얻기** :x:
+  - **그 관리자(요청자)의 도서관의 사용자 코드에 대한 정보 얻기**
     - 요청
       - `/API/administrator/getUserCodes` 또는 `/API/admin/getUserCodes`
     - 인자
@@ -208,9 +208,11 @@
       4. `theUserCodes = db.userCodes.find({"libraryID": theAccount.information.libraryID}, {"libraryID": 1, "userCode": 1, "userID": 1, "permission": 1, "_id": 0})`
       5. `JSON.stringify({"success": true, "userCodes": theUserCodes})`를 반환한다.
     - 반환 값
-      - `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      - `{"success": true, "userCodes": (그 사용자 코드들에 대한 정보):star:<배열의 형태로 나타낼 것>}`
+      - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "userCodes": [{"libraryID": (그 도서관 ID), "userCode": (사용자 코드), "userID": (사용자 ID), "permission": {"borrowable": (true 또는 false), "lightable": (true 또는 false)}}, ...]}`
 
   - **사용자 코드를 생성하고 관리하에 두기** :x:
     - 요청
