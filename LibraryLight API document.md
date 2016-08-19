@@ -138,8 +138,8 @@
       4. Returns `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`.
     - Returns
       - `{"success": false, "reason": "You have to log-in!"}`
-				  - `{"success": false, "reason": "You are not a user!"}`
-				  - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "You are not a user!"}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}`
 
 
