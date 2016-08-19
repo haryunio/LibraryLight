@@ -183,7 +183,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token)}`
 
-  - **To get the information about the user codes for the administrator's library** :x:
+  - **To get the information about the user codes for the administrator's library**
     - Request
       - `/API/administrator/getUserCodes` or `/API/admin/getUserCodes`
     - Parameters
@@ -195,9 +195,11 @@
       4. `theUserCodes = db.userCodes.find({"libraryID": theAccount.information.libraryID}, {"libraryID": 1, "userCode": 1, "userID": 1, "permission": 1, "_id": 0})`
       5. Returns `JSON.stringify({"success": true, "userCodes": theUserCodes})`.
     - Returns
-      - `{"success": false, "reason": "You are not an administrator of a library!"}`.
-      - `{"success": true, "userCodes": (the information about the user codes):star:<In a specific array form.>}`
+      - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "userCodes": [{"libraryID": (the library ID), "userCode": (a user code), "userID": (a user ID), "permission": {"borrowable": (a boolean value), "lightable": (a boolean value)}}, ...]}`
 
   - **To generate a user-code and make it under control** :x: :boom:
     - Request
