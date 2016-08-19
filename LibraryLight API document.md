@@ -164,7 +164,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
 
-  - **To get the information about the administrator's library** :x:
+  - **To get the information about the administrator's library**
     - Request
       - POST
       - `/API/administrator/getLibraryInformation` or `/API/admin/getLibraryInformation`
@@ -177,9 +177,10 @@
       4. `theLibraryInformation = db.libraries.findOne({"libraryID": theAccount.information.libraryID}, {"_id": 0})`
       5. Returns `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken})`.
     - Returns
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
-      - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token)}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "libraryID": (the library ID), "libraryAPIToken": (the library API token)}`
 
   - **To get the information about the user codes for the administrator's library** :x:
     - Request
