@@ -201,7 +201,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "userCodes": [{"libraryID": (the library ID), "userCode": (a user code), "userID": (a user ID), "permission": {"borrowable": (a boolean value), "lightable": (a boolean value)}}, ...]}`
 
-  - **To generate a user-code and make it under control** :x: :boom:
+  - **To generate a user-code and make it under control** :x:
     - Request
       - POST
       - `/API/administrator/newUserCode` or `/API/admin/newUserCode`
