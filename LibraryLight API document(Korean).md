@@ -214,7 +214,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "userCodes": [{"libraryID": (그 도서관 ID), "userCode": (사용자 코드), "userID": (사용자 ID), "permission": {"borrowable": (true 또는 false), "lightable": (true 또는 false)}}, ...]}`
 
-  - **사용자 코드를 생성하고 관리하에 두기** :x:
+  - **사용자 코드를 생성하고 관리하에 두기**
     - 요청
       - POST
       - `/API/administrator/newUserCode` 또는 `/API/admin/newUserCode`
@@ -225,13 +225,16 @@
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
       4. 무작위의 사용자 코드를 생성한다: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. 생성된 사용자 코드가 그 도서관에 존재하지 않으면 그 사용자 코드를 추가한다.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드)}, userID: null, permission: {"borrowable": false, "lightable": false}}, {upsert: true})`.
-      6. 이미 존재하면(`if(queryResult.upsertedId === undefined)`) 4번 동작으로 가되, 이 행위를 5번 했다면 `{"success": false, "reason": "Could not generate new user code."}`를 반환한다.
-      7. `JSON.stringify({"success": true, "newUserCode": (새롭게 생성된 사용자 코드)})`를 반환한다.
+      5. 생성된 사용자 코드가 그 도서관에 존재하지 않으면 그 사용자 코드를 추가한다.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (새롭게 생성된 사용자 코드), userID: null, permission: {"borrowable": false, "lightable": false}}}, {upsert: true})`.
+      6. 그 사용자 코드가 추가되었으면(`if(queryResult && queryResult.upsertedCount === 1)`), `{"success": true, "theNewUserCode": (새롭게 생성된 사용자 코드)}`를 반환한다.
+      7. 아니면, `{"success": false, "reason": "Could not generate a new user code. Please try again."}`을 반환한다.
     - 반환 값
       - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": true, "newUserCode": (새롭게 생성된 사용자 코드)}`
+      - `{"success": false, "reason": "Could not generate a new user code. Please try again."}`
+      - `{"success": true, "theNewUserCode": (새롭게 생성된 사용자 코드)}`
 
   - **특정한 사용자 코드의 권한 설정하기** :x:
     - 요청
