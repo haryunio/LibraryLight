@@ -201,7 +201,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "userCodes": [{"libraryID": (the library ID), "userCode": (a user code), "userID": (a user ID), "permission": {"borrowable": (a boolean value), "lightable": (a boolean value)}}, ...]}`
 
-  - **To generate a user-code and make it under control** :x:
+  - **To generate a user-code and make it under control**
     - Request
       - POST
       - `/API/administrator/newUserCode` or `/API/admin/newUserCode`
@@ -212,13 +212,16 @@
       2. `theAccount = db.accounts.findOne({ID: request.session.loggedInAs}, {type: 1, information: 1})`
       3. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       4. Generates a random user code: `(length => (Math.random().toString(36).substring(2, 2 + length) + '0'.repeat(length)).substring(0, length))(20).toUpperCase()`.
-      5. Adds the user code if the user code for the library does not exist.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, userID: null, permission: {"borrowable": false, "lightable": false}}, {upsert: true})`.
-      6. If it already exists(`if(queryResult.upsertedId === undefined)`), goes to the step 4, unless this was done five times; if so, returns `{"success": false, "reason": "Could not generate new user code."}`.
-      7. Returns `JSON.stringify({"success": true, "newUserCode": (the newly generated user code)})`.
+      5. Adds the user code if the user code for the library does not exist.: `queryResult = db.userCodes.updateOne({libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code)}, {$setOnInsert: {libraryID: theAccount.information.libraryID, "userCode": (the newly generated user code), userID: null, permission: {"borrowable": false, "lightable": false}}}, {upsert: true})`.
+      6. If the user code has been added(`if(queryResult && queryResult.upsertedCount === 1)`), returns `{"success": true, "theNewUserCode": (새롭게 생성된 사용자 코드)}`.
+      7. Else, returns `{"success": false, "reason": "Could not generate a new user code. Please try again."}`.
     - Returns
       - `{"success": false, "reason": "noGET is not truthy."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+      - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": true, "newUserCode": (the newly generated user code)}`
+      - `{"success": false, "reason": "Could not generate a new user code. Please try again."}`
+      - `{"success": true, "theNewUserCode": (the newly generated user code)}`
 
   - **To set permissions of a specific user-code.** :x: :star:
     - Request
