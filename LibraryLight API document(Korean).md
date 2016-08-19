@@ -89,7 +89,7 @@
       1. 입력된 인수가 유효한지 확인한다.
       2. 입력된 ID가 이미 등록된 계정의 ID인지 엄격하지 않게 확인한다: `db.accounts.findOne({ID: (그 계정 ID)}, {"_id": 1})`. 만약 그렇다면, `{"success": false, "reason": "The account already exists."}`를 반환한다.
       3. 입력된 암호에 대한 해시를 생성한다. 이는 연산 비용이 많이 드는 작업이다.
-      4. 계정이 이미 있지 않으면 계정을 생성한다: `db.accounts.updateOne({ID: (그 계정 ID)}, {ID: (그 계정 ID), passwordHash: (그 암호에 대한 해시), type: "user", information: {usingLibraries: []}}, {upsert: true})`.
+      4. 계정이 이미 있지 않으면 계정을 생성한다: `db.accounts.updateOne({ID: (그 계정 ID)}, {$setOnInsert: {ID: (그 계정 ID), passwordHash: (그 암호에 대한 해시), type: "user", information: {usingLibraries: []}}}, {upsert: true})`.
       5. 4번 단계에서 사용한 쿼리의 반환 값의 `"upsertedId"` 프로퍼티가 존재하면 `{"success": true}`를 반환하고, 아니면 `{"success": false, "reason": "The account already exists."}`를 반환한다.
     - 반환 값
       - `{"success": true}`
