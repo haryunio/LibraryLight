@@ -177,7 +177,7 @@
       - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true}`
 
-  - **그 관리자(요청자)의 도서관에 대한 정보 얻기** :x:
+  - **그 관리자(요청자)의 도서관에 대한 정보 얻기**
     - 요청
       - POST
       - `/API/administrator/getLibraryInformation` 또는 `/API/admin/getLibraryInformation`
@@ -190,9 +190,10 @@
       4. `theLibraryInformation = db.libraries.findOne({"libraryID": theAccount.information.libraryID}, {"_id": 0})`
       5. `JSON.stringify({"success": true, "libraryID": theLibraryInformation.libraryID, "libraryAPIToken": theLibraryInformation.libraryAPIToken, "userCodes": theLibraryInformation.userCodes})`를 반환한다.
     - 반환 값
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
-      - `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰)}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": true, "libraryID": (그 도서관 ID), "libraryAPIToken": (그 도서관 API 토큰)}`
 
   - **그 관리자(요청자)의 도서관의 사용자 코드에 대한 정보 얻기** :x:
     - 요청
