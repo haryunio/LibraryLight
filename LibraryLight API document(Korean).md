@@ -123,7 +123,7 @@
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
       - `{"success": true}`
 
-  - **이용하고 있는 도서관 목록 얻기** :x:
+  - **이용하고 있는 도서관 목록 얻기**
     - 요청
       - POST
       - `/API/user/getUsingLibraries`
@@ -135,9 +135,9 @@
       3. `theAccount.type === "user"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not a user!"}`를 반환한다.
       4. `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`를 반환한다.
     - 반환 값
-      - `{"success": false, "reason": "noGET is not truthy."}`
-      - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": false, "reason": "You are not a user!"}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+				  - `{"success": false, "reason": "You are not a user!"}`
+				  - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "usingLibraries": [{"libraryID": (그 도서관 ID), "userCode": (그 도서관에서의 그 사용자(요청자)의 코드)}, ...]}`
 
   - **특정한 책이 있는 책장에 대한 점등 요청을 보내기** :x: :star:
