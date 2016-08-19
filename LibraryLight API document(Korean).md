@@ -136,8 +136,8 @@
       4. `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`를 반환한다.
     - 반환 값
       - `{"success": false, "reason": "You have to log-in!"}`
-				  - `{"success": false, "reason": "You are not a user!"}`
-				  - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "You are not a user!"}`
+      - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "usingLibraries": [{"libraryID": (그 도서관 ID), "userCode": (그 도서관에서의 그 사용자(요청자)의 코드)}, ...]}`
 
   - **특정한 책이 있는 책장에 대한 점등 요청을 보내기** :x: :star:
