@@ -125,7 +125,7 @@
       - `{"success": false, "reason": "The user-code does not exist, or is already owned by another user."}`
       - `{"success": true}`
 
-  - **To get the list of libraries that is being used by the user** :x:
+  - **To get the list of libraries that is being used by the user**
     - Request
       - POST
       - `/API/user/getUsingLibraries`
@@ -137,9 +137,9 @@
       3. Checks if `theAccount.type === "user"`. If it isn't, returns `{"success": false, "reason": "You are not a user!"}`.
       4. Returns `JSON.stringify({"success": true, "usingLibraries": theAccount.information.usingLibraries})`.
     - Returns
-      - `{"success": false, "reason": "noGET is not truthy."}`
-      - `{"success": false, "reason": "Something is wrong with the database."}`
-      - `{"success": false, "reason": "You are not a user!"}`
+      - `{"success": false, "reason": "You have to log-in!"}`
+				  - `{"success": false, "reason": "You are not a user!"}`
+				  - `{"success": false, "reason": "Something is wrong with the database."}`
       - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}`
 
 
