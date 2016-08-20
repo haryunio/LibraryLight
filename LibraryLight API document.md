@@ -247,7 +247,7 @@
       - `{"success": false, "reason": "The user code does not exist."}`
       - `{"success": true}`
 
-  - **To delete a specific user-code for an administrator's library** :x:
+  - **To delete a specific user-code for an administrator's library**
     - Request
       - POST
       - `/API/administrator/deleteUserCode` or `/API/admin/deleteUserCode`
@@ -255,16 +255,18 @@
       - `userCode`: a user-code, to delete, for the administrator's library.
     - Behavior
       1. Validates the inputs.
-      2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      2. Checks if the client is an administrator. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
       4. Removes the user's lights: `db.lights.delete({libraryID: (the library ID), lighter: (the user code to delete)})`.
       5. Queries `db.userCodes.deleteOne({libraryID: (the library ID), userCode: (the user code to delete)})`; if the returned does not have `deletedCount` property is `1`, returns `{"success": false, "reason": "The user code does not exist."}`.
       6. Returns `{"success": true}`.
     - Returns
-      - `{"success": true}`
+      - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
-      - `{"success": false, "reason": "The user code does not exist."}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": true}`
 
   - **To generate a new library API token and update it** :x:
     - Request
