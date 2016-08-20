@@ -143,7 +143,7 @@
       - `{"success": true, "usingLibraries": [{"libraryID": (the library ID), "userCode": (the code of the user in the library)}, ...]}`
 
 
-## For administrators - 6 APIs
+## For administrators - 7 APIs
 
   - **To add a book in their libraries**
     - Request
