@@ -257,8 +257,8 @@
       1. Validates the inputs.
       2. Checks if the client is an administrator. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. Removes the user's lights: `db.lights.delete({libraryID: (the library ID), lighter: (the user code to delete)})`.
-      5. Queries `db.userCodes.deleteOne({libraryID: (the library ID), userCode: (the user code to delete)})`; if the returned does not have `deletedCount` property is `1`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      4. Removes the user's lights: `db.lights.remove({libraryID: (the library ID), lighter: (the user code to delete)})`.
+      5. Queries `db.userCodes.remove({libraryID: (the library ID), userCode: (the user code to delete)}, {justOne: true})`; if the returned does not have `deletedCount` property is `1`, returns `{"success": false, "reason": "The user code does not exist."}`.
       6. Returns `{"success": true}`.
     - Returns
       - `{"success": false, "reason": "The user code is not valid."}`
