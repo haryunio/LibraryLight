@@ -236,24 +236,29 @@
       - `{"success": false, "reason": "Could not generate a new user code. Please try again."}`
       - `{"success": true, "theNewUserCode": (새롭게 생성된 사용자 코드)}`
 
-  - **특정한 사용자 코드의 권한 설정하기** :x:
+  - **특정한 사용자 코드의 권한 설정하기**
     - 요청
       - POST
       - `/API/administrator/setPermissions` 또는 `/API/admin/setPermissions`
     - 인자
       - `userCode`
-      - `permissions`
+      - `borrowable`
+      - `lightable`
     - 동작
       1. 입력된 인수가 유효한지 확인한다.
-      2. `theAccount.type === "administrator"`인지 확인한다. 그렇지 않다면, `{"success": false, "reason": "You are not an administrator of a library!"}`를 반환한다.
+      2. 요청자가 관리자인지 확인한다.
       3. 그 관리자(요청자)의 도서관의 ID를 얻는다: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.userCodes.updateOne({libraryID: (그 도서관 ID), "userCode": (권한을 설정할 사용자 코드)}, {$set: {"permission": (설정할 권한들)}})` 후에, 만약 그 반환 값이 `{"modifiedCount": 1}`가 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
-      5. `{"success": true}`를 반환한다.
+      4. `db.userCodes.updateOne({libraryID: (그 도서관 ID), "userCode": (권한을 설정할 사용자 코드)}, {$set: {"permission": (설정할 권한들)}})` 후에, 만약 반환된 객체의 `modifiedCount`가 `1`이 아니면, `{"success": false, "reason": "The user code does not exist."}`를 반환한다.
+      5. 그렇지 않으면, `{"success": true}`를 반환한다.
     - 반환 값
-      - `{"success": true}`
-      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "The ``borrowable`` is not valid."}`
+      - `{"success": false, "reason": "The ``lightable`` is not valid."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": true}`
 
   - **그 도서관의 특정한 사용자 코드 제거하기** :x:
     - 요청
