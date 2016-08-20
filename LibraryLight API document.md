@@ -223,24 +223,29 @@
       - `{"success": false, "reason": "Could not generate a new user code. Please try again."}`
       - `{"success": true, "theNewUserCode": (the newly generated user code)}`
 
-  - **To set permissions of a specific user-code.** :x: :star:
+  - **To set permissions of a specific user-code.**
     - Request
       - POST
       - `/API/administrator/setPermissions` or `/API/admin/setPermissions`
     - Parameters
       - `userCode`
-      - `permissions`
+      - `borrowable`
+      - `lightable`
     - Behavior
       1. Validates the inputs.
-      2. Checks if `theAccount.type === "administrator"`. If it isn't, returns `{"success": false, "reason": "You are not an administrator of a library!"}`.
+      2. Checks if the client is an administrator.
       3. Gets the library ID: `db.accounts.findOne({ID: request.session.loggedInAs}, {information: 1}).information.libraryID`.
-      4. `db.userCodes.updateOne({libraryID: (the library ID), "userCode": (the user code to set its permissions)}, {$set: {"permission": (permissions to set)}})`. If the returned is not `{"modifiedCount": 1}`, returns `{"success": false, "reason": "The user code does not exist."}`.
-      5. Returns `{"success": true}`.
+      4. `db.userCodes.updateOne({libraryID: (the library ID), "userCode": (the user code to set its permissions)}, {$set: {"permission": (permissions to set)}})`. If the returned object's property `modifiedCount` is not `1`, returns `{"success": false, "reason": "The user code does not exist."}`.
+      5. Else, returns `{"success": true}`.
     - Returns
-      - `{"success": true}`
-      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": false, "reason": "The user code is not valid."}`
+      - `{"success": false, "reason": "The ``borrowable`` is not valid."}`
+      - `{"success": false, "reason": "The ``lightable`` is not valid."}`
+      - `{"success": false, "reason": "You have to log-in!"}`
       - `{"success": false, "reason": "You are not an administrator of a library!"}`
       - `{"success": false, "reason": "Something is wrong with the database."}`
+      - `{"success": false, "reason": "The user code does not exist."}`
+      - `{"success": true}`
 
   - **To delete a specific user-code for an administrator's library** :x:
     - Request
