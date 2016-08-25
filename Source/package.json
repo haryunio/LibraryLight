@@ -1,0 +1,25 @@
+﻿{
+	"name": "LibraryLight",
+	"version": "0.0.1",
+	"author": {
+			"name": "K.",
+			"email": "wlzla000@naver.com",
+			"url": "http://blog.naver.com/wlzla000"
+		},
+	"description": "Makes libraries light!",
+	"private": true,
+	"dependencies": {
+			"express": "4.13.4",
+			"body-parser": "1.15.1",
+			"cookie-parser": "1.4.2",
+			"express-force-ssl": "0.3.2",
+			"mongodb": "2.1.19",
+			"connect-mongo": "1.2.0",
+			"express-session": "1.13.0",
+			"bcrypt": "0.8.6",
+			"http": "0.0.0",
+			"https": "1.0.0",
+			"fs": "0.0.2",
+			"path": "0.12.7"
+		}
+}

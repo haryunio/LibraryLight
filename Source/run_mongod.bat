@@ -1,0 +1,1 @@
+"E:\Program Files\MongoDB\Server\3.2\bin\mongod.exe" --dbpath="E:\LibraryLight\MongoDB\db" --bind_ip="127.0.0.1" --logpath="E:\LibraryLight\MongoDB\log\mongo.log" --noscripting
