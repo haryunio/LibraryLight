@@ -145,7 +145,7 @@
 
 ## For administrators - 7 APIs
 
-  - **To add a book in their libraries**
+  - **To add books in their libraries**
     - Request
       - POST
       - `/API/administrator/addBook` or `/API/admin/addBook`
