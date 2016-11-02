@@ -10,7 +10,8 @@
  - 계정의 유형은 바뀌지 않는다.
  - API들은 각기 요구되는 권한(인증)이 있어야 동작한다.
  - 모든 API들은 원자적이어야 한다(즉 :boom:이 없어야 한다.).
- - API 루틴이 실행되고 있을 때에 데이터베이스 오류가 나면, `{"success": false, "reason": "Something is wrong with the database."}`가 반환된다.
+ - API 루틴이 실행되고 있을 때에 데이터베이스 오류가 나면,
+   `{"success": false, "reason": "Something is wrong with the database."}`가 반환된다.
 
 ## 문제점
 ### **쿼리 충돌을 어떻게 방지할 것인가?**
