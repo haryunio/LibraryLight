@@ -1,8 +1,9 @@
 # LibraryLight scenario
 
-:small_orange_diamond:: users' API.
-:small_blue_diamond:: library administrators' API.
-:small_red_triangle:: bookcases' API.
+:small_orange_diamond:: Users' API.
+:small_blue_diamond:: Library Administrators' API.
+:small_red_triangle:: Bookcases' API.
+
 
 1. 사용자가 책첵 서비스가 적용된 도서관을 이용하려고 한다.
 2. :small_orange_diamond: `/API/user/register` 그러기 위하여 **그 사용자**는 책첵 계정을 생성(회원 가입)한다.
@@ -47,7 +48,7 @@ Documentation progress: :small_orange_diamond:(5/7), :small_blue_diamond:(7/9), 
 ### 회원 탈퇴 시에 그 사용자가 빌린 책이 남아 있을 경우의 처리 문제.
  - 빌린 책이 남아 있으면 회원 탈퇴가 불가능하게 만들면 편할 텐데, 그렇게 하면 다른 문제가 발생할 수 있다.
 
-### 책 빼돌리기 문제.
+### 책 빼돌리기 문제. (Fixed)
  1. 비싼 책을 빌린다.
  2. 비싼 책의 RFID 태그 A에 저장된 값을 읽어, 그 값을 RFID 태그 B에 쓴다.
  3. B를 공책에 붙이고 공책을 반납한다.
